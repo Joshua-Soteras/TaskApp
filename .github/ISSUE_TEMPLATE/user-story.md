@@ -1,7 +1,7 @@
 ---
 name: User Story
 about: smallest unit of functionality; child of a feature; completed in one sprint
-title: 'UserStory: '
+title: 'User Story: '
 labels: 'user story'
 assignees: ''
 
