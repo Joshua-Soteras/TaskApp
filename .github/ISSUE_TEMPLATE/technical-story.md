@@ -1,7 +1,7 @@
 ---
 name: Technical Story
 about: technical work item; child of a feature; completed in one sprint
-title: 'TechStory: '
+title: 'Technical Story: '
 labels: 'technical story'
 assignees: ''
 
