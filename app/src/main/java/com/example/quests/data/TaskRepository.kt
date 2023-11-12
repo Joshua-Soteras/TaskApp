@@ -1,0 +1,18 @@
+package com.example.quests.data
+
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * Repository that provides CRUD operations for Tasks.
+ */
+interface TaskRepository {
+    fun getAllTasksStream(): Flow<List<Task>>
+
+    fun getTaskStream(id: Int): Flow<Task?>
+
+    suspend fun insertTask(task: Task)
+
+    suspend fun updateTask(task: Task)
+
+    suspend fun deleteTask(task: Task)
+}
