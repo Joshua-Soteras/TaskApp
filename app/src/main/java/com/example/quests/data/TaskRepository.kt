@@ -10,6 +10,8 @@ interface TaskRepository {
 
     fun getTaskStream(id: String): Flow<Task?>
 
+    suspend fun createTask(title: String, description: String): String
+
     suspend fun insertTask(task: Task)
 
     suspend fun updateTask(task: Task)
