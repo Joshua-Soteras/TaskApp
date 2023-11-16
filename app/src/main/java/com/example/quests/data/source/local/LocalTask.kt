@@ -10,10 +10,9 @@ import androidx.room.PrimaryKey
  * See ModelMappingExt.kt for mapping functions used to convert this model to other
  * models.
  */
-@Entity(tableName = "tasks")
+@Entity(tableName = "task")
 data class LocalTask(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey val id: String,
     var title: String,
     var description: String,
 )

@@ -18,7 +18,7 @@ class DefaultTaskRepository @Inject constructor(
         }
     }
 
-    override fun getTaskStream(id: Int): Flow<Task?> {
+    override fun getTaskStream(id: String): Flow<Task?> {
         return localDataSource.getTask(id).map {
             it.toExternal()
         }

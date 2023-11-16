@@ -37,8 +37,8 @@ class TaskDaoTest {
     @Throws(IOException::class)
     fun closeDb() = database.close()
 
-    private var task1 = LocalTask(1, "Title", "desc")
-    private var task2 = LocalTask(2, "2nd Title", "descdesc")
+    private var task1 = LocalTask("1", "Title", "desc")
+    private var task2 = LocalTask("2", "2nd Title", "descdesc")
 
     private suspend fun addOneTaskToDb() {
         taskDao.insert(task1)
@@ -90,7 +90,7 @@ class TaskDaoTest {
         addOneTaskToDb()
 
         // WHEN - Updating a task and get task by id
-        val newTask1 = LocalTask(1, "different", "different desc")
+        val newTask1 = LocalTask("1", "different", "different desc")
         taskDao.update(newTask1)
         val loaded: LocalTask = taskDao.getTask(task1.id).first()
 
