@@ -35,6 +35,7 @@ object DatabaseModule {
         ).build()
     }
 
+    @Singleton
     @Provides
     fun provideTaskDao(database: QuestsDatabase): TaskDao = database.taskDao()
 }
