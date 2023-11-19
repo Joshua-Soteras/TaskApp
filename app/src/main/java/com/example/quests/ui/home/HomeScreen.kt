@@ -26,6 +26,7 @@ import com.example.quests.R
 import com.example.quests.data.Task
 import com.example.quests.ui.navigation.NavigationDestination
 import com.example.quests.ui.theme.QuestsTheme
+import com.example.quests.ui.util.HomeTopAppBar
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -42,7 +43,10 @@ fun HomeScreen(
     val scrollBehavior = enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            HomeTopAppBar(scrollBehavior = scrollBehavior)
+        }
     ) { paddingValues ->
         HomeContent(
             taskList = homeUiState.taskList,
@@ -69,7 +73,12 @@ private fun HomeContent(
                 style = MaterialTheme.typography.titleLarge
             )
         } else {
-            LazyColumn(modifier = modifier) {
+            LazyColumn(
+                horizontalAlignment = Alignment.Start,
+                // Have to use Modifier instead of the passed modifier here or else there will
+                // be large padding on top of the list. No idea what's causing that
+                modifier = Modifier.fillMaxSize()
+            ) {
                 items(taskList) {task ->
                     TaskItem(
                         task = task,

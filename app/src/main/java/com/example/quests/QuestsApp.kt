@@ -13,5 +13,3 @@ import com.example.quests.ui.navigation.QuestsNavHost
 fun QuestsApp(navController: NavHostController = rememberNavController()) {
     QuestsNavHost(navController = navController)
 }
-
-// TODO: TopAppBar

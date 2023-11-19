@@ -2,4 +2,6 @@
     <string name="app_name">Quests</string>
     <string name="no_tasks_in_the_database">No tasks in the database.</string>
     <string name="home_destination_title">Quests</string>
+    <string name="open_drawer">Open Drawer</string>
+    <string name="home_dropdown_menu_description">Additional Actions</string>
 </resources>
