@@ -17,7 +17,7 @@ data class HomeUiState(val taskList: List<Task> = listOf())
 class HomeViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
-    val homeUiState: StateFlow<HomeUiState> =
+    val uiState: StateFlow<HomeUiState> =
         taskRepository.getAllTasksStream().map { HomeUiState(it) }
             .stateIn(
                 scope = viewModelScope,
