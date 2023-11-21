@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.quests.ui.home.HomeDestination
 import com.example.quests.ui.home.HomeScreen
+import com.example.quests.ui.task.AddTaskDestination
+import com.example.quests.ui.task.AddTaskScreen
 
 @Composable
 fun QuestsNavHost(
@@ -20,7 +22,14 @@ fun QuestsNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
-            HomeScreen()
+            HomeScreen(
+                onAddTask = { navController.navigate(AddTaskDestination.route) }
+            )
+        }
+        composable(route = AddTaskDestination.route) {
+            AddTaskScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

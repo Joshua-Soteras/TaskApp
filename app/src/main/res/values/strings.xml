@@ -4,4 +4,9 @@
     <string name="home_destination_title">Quests</string>
     <string name="open_drawer">Open Drawer</string>
     <string name="home_dropdown_menu_description">Additional Actions</string>
+    <string name="create_task">Create Task</string>
+    <string name="title_input_label">Title</string>
+    <string name="description_label_input">Description</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
 </resources>

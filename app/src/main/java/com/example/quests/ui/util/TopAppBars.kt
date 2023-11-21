@@ -5,6 +5,7 @@ package com.example.quests.ui.util
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -16,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -81,6 +83,24 @@ private fun HomeDropdownMenu() {
     }
 }
 
+@Composable
+fun AddTaskTopAppBar(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(text = stringResource(id = R.string.create_task)) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        },
+    )
+}
 
 
 @Preview
@@ -96,5 +116,13 @@ private fun HomeTopAppBarPreview() {
 private fun HomeDropdownMenuPreview() {
     Surface {
         HomeDropdownMenu()
+    }
+}
+
+@Preview
+@Composable
+private fun AddTaskTopAppBarPreview() {
+    Surface {
+        AddTaskTopAppBar({ })
     }
 }
