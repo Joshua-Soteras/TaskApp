@@ -56,4 +56,6 @@ class DefaultTaskRepository @Inject constructor(
     override suspend fun updateTask(task: Task) = localDataSource.update(task.toLocal())
 
     override suspend fun deleteTask(task: Task) = localDataSource.delete(task.toLocal())
+
+    override fun deleteAllTasks() = localDataSource.deleteAllTasks()
 }
