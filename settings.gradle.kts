@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Quests"
 include(":app")
+include(":shared-test")

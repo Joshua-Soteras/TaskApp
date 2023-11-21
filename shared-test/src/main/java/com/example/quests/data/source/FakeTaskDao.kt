@@ -38,4 +38,8 @@ class FakeTaskDao(initialTasks: List<LocalTask>? = emptyList()) : TaskDao {
     override fun getAllTasks(): Flow<List<LocalTask>> = flow {
         _tasks?.values?.toList()?.let { emit(it) }
     }
+
+    override fun deleteAllTasks() {
+        _tasks?.clear()
+    }
 }
