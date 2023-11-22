@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -17,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -27,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.quests.R
@@ -34,8 +37,11 @@ import com.example.quests.R
 @Composable
 fun HomeTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    clearCompletedTasks: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val openAlertDialog = remember { mutableStateOf(false) }
+
     CenterAlignedTopAppBar(
         title = { Text(text = stringResource(R.string.home_destination_title)) },
         modifier = modifier,
@@ -53,22 +59,59 @@ fun HomeTopAppBar(
             }
         },
         actions = {
-            HomeDropdownMenu()
+            HomeDropdownMenu(
+                onClearCompletedTasks = { openAlertDialog.value = !openAlertDialog.value },
+
+            )
         }
     )
+
+    if (openAlertDialog.value) {
+        AlertDialog(
+            title = { Text(stringResource(R.string.clear_completed_tasks_dialog)) },
+            onDismissRequest = { openAlertDialog.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        clearCompletedTasks()
+                        openAlertDialog.value = false
+                    },
+                    modifier = Modifier.testTag("confirm clear completed tasks")
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openAlertDialog.value = false
+                    },
+                    modifier = Modifier.testTag("dismiss clear completed tasks")
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
 }
 
 @Composable
-private fun HomeDropdownMenu() {
+private fun HomeDropdownMenu(
+    onClearCompletedTasks: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.wrapContentSize(Alignment.TopEnd)
     ) {
-        IconButton(onClick = { expanded = !expanded }) {
+        IconButton(
+            onClick = { expanded = !expanded },
+            modifier = Modifier.testTag("home dropdown button")
+        ) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                contentDescription = stringResource(R.string.home_dropdown_menu_description)
+                contentDescription = stringResource(R.string.home_dropdown_menu_description),
             )
         }
         DropdownMenu(
@@ -76,8 +119,9 @@ private fun HomeDropdownMenu() {
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
-                text = { Text("test")},
-                onClick = { /*TODO*/ }
+                text = { Text(stringResource(R.string.clear_completed))},
+                onClick = { onClearCompletedTasks(); expanded = !expanded },
+                modifier = Modifier.testTag("clear completed button")
             )
         }
     }
@@ -107,7 +151,7 @@ fun AddTaskTopAppBar(
 @Composable
 private fun HomeTopAppBarPreview() {
     Surface {
-        HomeTopAppBar()
+        HomeTopAppBar(clearCompletedTasks = { })
     }
 }
 
@@ -115,7 +159,7 @@ private fun HomeTopAppBarPreview() {
 @Composable
 private fun HomeDropdownMenuPreview() {
     Surface {
-        HomeDropdownMenu()
+        HomeDropdownMenu(onClearCompletedTasks = { })
     }
 }
 

@@ -60,4 +60,31 @@ class QuestsTest {
             assertTitleIsDisplayed(taskTitle)
         }
     }
+
+    @Test
+    fun clearCompletedTasks() = runTest {
+        // GIVEN - an active and completed task in the repository
+        val completedTitle = "task to be completed"
+        val activeTitle = "task that's still here"
+        val completedTaskId = taskRepository.createTask(completedTitle)
+        taskRepository.createTask(activeTitle)
+        taskRepository.completeTask(completedTaskId)
+
+        // WHEN - clear completed tasks is confirmed
+        // THEN - the completed title does not exist and the active title does
+        home(composeTestRule) {
+            clearCompletedAndConfirm()
+            // For some reason, even though the task has been deleted and it is visually gone,
+            // the previous task item slots are still present, they're just invisible. The
+            // data itself also thinks that the taskList is smaller.
+            // You can see this most explicitly when the task list is longer than the screen, then
+            // clearing the completed tasks, and notice that you can still scroll below.
+            // So this is a crappy hack to force them to disappear.
+            // But because I have to navigate between screens, this test is in the E2E file
+            // rather than HomeScreenTest.kt
+        } gotoAddTaskScreen { } backToHomeScreen {
+            assertTitleDoesNotExist(completedTitle)
+            assertTitleIsDisplayed(activeTitle)
+        }
+    }
 }

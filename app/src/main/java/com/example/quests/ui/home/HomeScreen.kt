@@ -71,7 +71,10 @@ fun HomeScreen(
                 testTagsAsResourceId = true
             },
         topBar = {
-            HomeTopAppBar(scrollBehavior = scrollBehavior)
+            HomeTopAppBar(
+                scrollBehavior = scrollBehavior,
+                clearCompletedTasks = viewModel::clearCompletedTasks
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddTask) {
