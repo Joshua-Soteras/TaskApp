@@ -39,4 +39,10 @@ interface TaskDao {
      */
     @Query("UPDATE task SET completionDate = :completionDate WHERE id = :id")
     suspend fun updateCompletionDate(id: String, completionDate: Long)
+
+    /**
+     * Delete all tasks marked as completed (a non-zero completion date)
+     */
+    @Query("DELETE FROM task WHERE completionDate <> 0")
+    suspend fun deleteCompletedTasks()
 }

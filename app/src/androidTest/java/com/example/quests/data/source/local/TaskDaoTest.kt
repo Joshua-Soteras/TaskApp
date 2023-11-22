@@ -3,6 +3,8 @@ package com.example.quests.data.source.local
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.filters.SmallTest
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -119,5 +121,23 @@ class TaskDaoTest {
         loaded.title shouldBe task1.title
         loaded.description shouldBe task1.description
         loaded.completionDate shouldBe completionDate
+    }
+
+    @Test
+    fun deleteCompletedTasksAndGetAllTasks() = runTest {
+        // GIVEN - a completed task and active task
+        addOneTaskToDb()
+        val completedTask = LocalTask(
+            id = "test id", title = "title", description = "", completionDate = 1L
+        )
+        taskDao.insert(completedTask)
+
+        // WHEN - deleting completed tasks
+        taskDao.deleteCompletedTasks()
+
+        // THEN - the completed task is not in database, but the active task is
+        val loaded: List<LocalTask> = taskDao.getAllTasks().first()
+        loaded shouldNotContain completedTask
+        loaded shouldContain task1
     }
 }
