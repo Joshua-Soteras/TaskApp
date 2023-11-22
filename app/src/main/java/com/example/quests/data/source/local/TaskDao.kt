@@ -30,4 +30,13 @@ interface TaskDao {
 
     @Query("DELETE FROM task")
     fun deleteAllTasks()
+
+    /**
+     * Updates the completion date of a task
+     *
+     * @param id id of the task
+     * @param completionDate date to set
+     */
+    @Query("UPDATE task SET completionDate = :completionDate WHERE id = :id")
+    suspend fun updateCompletionDate(id: String, completionDate: Long)
 }

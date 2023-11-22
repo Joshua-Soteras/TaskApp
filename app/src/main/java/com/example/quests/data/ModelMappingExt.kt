@@ -21,6 +21,7 @@ fun Task.toLocal() = LocalTask(
     id = id,
     title = title,
     description = description,
+    completionDate = completionDate,
 )
 
 fun List<Task>.toLocal() = map(Task::toLocal)
@@ -29,7 +30,8 @@ fun List<Task>.toLocal() = map(Task::toLocal)
 fun LocalTask.toExternal() = Task(
     id = id,
     title = title,
-    description = description
+    description = description,
+    completionDate = completionDate,
 )
 
 // Note: JvmName is used to provide a unique name for each extension function with the same name.

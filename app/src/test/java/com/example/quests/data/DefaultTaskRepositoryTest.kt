@@ -127,4 +127,17 @@ class DefaultTaskRepositoryTest {
         tasks shouldNotContain task
     }
 
+    @Test
+    fun completeTask() = testScope.runTest {
+        // GIVEN - a new task
+        val testTitle = "a title"
+        val taskId = taskRepository.createTask(testTitle)
+
+        // WHEN - completing the task
+        taskRepository.completeTask(taskId)
+        val task = taskRepository.getTaskStream(taskId).first()
+
+        // THEN - the task should be completed
+        task?.isCompleted shouldBe true
+    }
 }

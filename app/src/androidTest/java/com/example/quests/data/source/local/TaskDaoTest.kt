@@ -2,7 +2,6 @@ package com.example.quests.data.source.local
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -12,11 +11,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import java.io.IOException
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
 @SmallTest
 class TaskDaoTest {
     private lateinit var taskDao: TaskDao
@@ -34,7 +30,6 @@ class TaskDaoTest {
     }
 
     @After
-    @Throws(IOException::class)
     fun closeDb() = database.close()
 
     private var task1 = LocalTask("1", "Title", "desc")
@@ -50,8 +45,7 @@ class TaskDaoTest {
     }
 
     @Test
-    @Throws(IOException::class)
-    fun insertTaskAndGetById() = runTest {
+    fun insertTaskAndGetTask() = runTest {
         // GIVEN - Insert a task
         addOneTaskToDb()
 
@@ -66,7 +60,6 @@ class TaskDaoTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun insertTasksAndGetTasks() = runTest {
         // GIVEN - Insert two tasks
         addTwoTasksToDb()
@@ -84,8 +77,7 @@ class TaskDaoTest {
     }
 
     @Test
-    @Throws(IOException::class)
-    fun updateTaskAndGetById() = runTest {
+    fun updateTaskAndGetTask() = runTest {
         // GIVEN - Insert a task
         addOneTaskToDb()
 
@@ -101,8 +93,7 @@ class TaskDaoTest {
     }
 
     @Test
-    @Throws(IOException::class)
-    fun deleteTaskAndGetById() = runTest {
+    fun deleteTaskAndGetTask() = runTest {
         // GIVEN - Insert a task
         addOneTaskToDb()
 
@@ -112,5 +103,21 @@ class TaskDaoTest {
 
         // THEN - The loaded data is null
         loaded shouldBe null
+    }
+
+    @Test
+    fun updateCompletionDateAndGetTask() = runTest {
+        // GIVEN - insert a task
+        addOneTaskToDb()
+
+        // WHEN - updating the completion date
+        val completionDate = 123L
+        taskDao.updateCompletionDate(task1.id, completionDate)
+
+        // THEN - loaded data has updated date
+        val loaded = taskDao.getTask(task1.id).first()
+        loaded.title shouldBe task1.title
+        loaded.description shouldBe task1.description
+        loaded.completionDate shouldBe completionDate
     }
 }

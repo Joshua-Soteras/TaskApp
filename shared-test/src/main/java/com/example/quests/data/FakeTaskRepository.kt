@@ -1,5 +1,6 @@
 package com.example.quests.data
 
+import com.example.quests.ui.util.getCurrentDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,6 +59,12 @@ class FakeTaskRepository : TaskRepository {
     override fun deleteAllTasks() {
         _savedTasks.update {
             LinkedHashMap()
+        }
+    }
+
+    override suspend fun completeTask(id: String) {
+        _savedTasks.value[id]?.let {
+            insertTask(it.copy(completionDate = getCurrentDateTime().time))
         }
     }
 

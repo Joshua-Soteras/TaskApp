@@ -2,6 +2,7 @@ package com.example.quests.data
 
 import com.example.quests.data.source.local.TaskDao
 import com.example.quests.di.DefaultDispatcher
+import com.example.quests.ui.util.getCurrentDateTime
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -58,4 +59,8 @@ class DefaultTaskRepository @Inject constructor(
     override suspend fun deleteTask(task: Task) = localDataSource.delete(task.toLocal())
 
     override fun deleteAllTasks() = localDataSource.deleteAllTasks()
+
+    override suspend fun completeTask(id: String) {
+        localDataSource.updateCompletionDate(id, getCurrentDateTime().time)
+    }
 }
