@@ -67,4 +67,8 @@ class DefaultTaskRepository @Inject constructor(
     override suspend fun activateTask(id: String) {
         localDataSource.updateCompletionDate(id, 0L)
     }
+
+    override suspend fun clearCompletedTasks() {
+        localDataSource.deleteCompletedTasks()
+    }
 }

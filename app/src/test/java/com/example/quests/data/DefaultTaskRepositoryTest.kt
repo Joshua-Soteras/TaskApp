@@ -1,6 +1,7 @@
 package com.example.quests.data
 
 import com.example.quests.data.source.FakeTaskDao
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
@@ -155,4 +156,22 @@ class DefaultTaskRepositoryTest {
         task?.isCompleted shouldBe false
     }
 
+    @Test
+    fun clearCompletedTasks() = testScope.runTest {
+        // GIVEN - a completed task and active task
+        val completedTaskId = taskRepository.createTask("completed task")
+        taskRepository.completeTask(completedTaskId)
+        val completedTask = taskRepository.getTaskStream(completedTaskId).first()
+        val activeTaskId = taskRepository.createTask("active task")
+        val activeTask = taskRepository.getTaskStream(activeTaskId).first()
+
+
+        // WHEN - clearing completed tasks
+        taskRepository.clearCompletedTasks()
+
+        // THEN - the completed task is not in repository, but the active task is
+        val tasks = taskRepository.getAllTasksStream().first()
+        tasks shouldNotContain completedTask
+        tasks shouldContain activeTask
+    }
 }

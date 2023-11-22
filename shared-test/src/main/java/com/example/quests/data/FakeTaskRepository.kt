@@ -74,6 +74,15 @@ class FakeTaskRepository : TaskRepository {
         }
     }
 
+    override suspend fun clearCompletedTasks() {
+        _savedTasks.update {
+            // only keep the tasks which are not completed
+            it.filterValues { task ->
+                !task.isCompleted
+            } as LinkedHashMap<String, Task>
+        }
+    }
+
     /**
      * For testing setup, easier way to insert multiple tasks.
      */
