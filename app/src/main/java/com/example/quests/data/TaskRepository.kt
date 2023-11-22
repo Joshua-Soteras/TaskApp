@@ -19,4 +19,10 @@ interface TaskRepository {
     suspend fun deleteTask(task: Task)
 
     fun deleteAllTasks()
+
+    suspend fun completeTask(id: String)
+
+    suspend fun activateTask(id: String)
+
+    suspend fun clearCompletedTasks()
 }

@@ -43,7 +43,7 @@ class HomeScreenTest {
 
     @Test
     fun displayTask_whenRepositoryHasData() = runTest {
-        // WHEN - there is a task in the repository
+        // GIVEN - there is a task in the repository
         val title = "test display title"
         repository.createTask(title)
 
@@ -57,7 +57,7 @@ class HomeScreenTest {
 
     @Test
     fun displayEmptyMessage_whenRepositoryHasNoData() = runTest {
-        // WHEN - there are no tasks in the repository
+        // GIVEN - there are no tasks in the repository
         repository.deleteAllTasks()
 
         // THEN - the no task message is displayed
@@ -65,4 +65,7 @@ class HomeScreenTest {
             assertNoTasksInDatabase()
         }
     }
+
+    // TODO: once we have filters set up for completed and (active + completed), we can do
+    //  tests for marking tasks as complete
 }

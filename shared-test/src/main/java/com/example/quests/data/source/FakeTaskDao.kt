@@ -42,4 +42,12 @@ class FakeTaskDao(initialTasks: List<LocalTask>? = emptyList()) : TaskDao {
     override fun deleteAllTasks() {
         _tasks?.clear()
     }
+
+    override suspend fun updateCompletionDate(id: String, completionDate: Long) {
+        _tasks?.get(id)?.let { it.completionDate = completionDate }
+    }
+
+    override suspend fun deleteCompletedTasks() {
+        _tasks?.entries?.retainAll { (_, v) -> v.completionDate == 0L }
+    }
 }
