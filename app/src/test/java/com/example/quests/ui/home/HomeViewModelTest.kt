@@ -55,4 +55,16 @@ class HomeViewModelTest {
         uiState.snackbarMessage shouldNotBe null
         uiState.lastTaskCompleted?.id shouldBe taskId
     }
+
+    @Test
+    fun clearCompletedTasks() = runTest {
+        // GIVEN - an active and completed task in the repository
+
+        // WHEN - clearing completing tasks
+        homeViewModel.clearCompletedTasks()
+
+        // THEN - only one task is in the repository
+        val uiState = homeViewModel.uiState.first()
+        uiState.taskList.size shouldBe 1
+    }
 }

@@ -69,4 +69,8 @@ class HomeViewModel @Inject constructor(
     private fun setSnackbarMessage(message: Int?) {
         _snackbarMessage.value = message
     }
+
+    fun clearCompletedTasks() = viewModelScope.launch {
+        taskRepository.clearCompletedTasks()
+    }
 }
