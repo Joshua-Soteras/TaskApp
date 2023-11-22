@@ -65,4 +65,7 @@ class HomeScreenTest {
             assertNoTasksInDatabase()
         }
     }
+
+    // TODO: once we have filters set up for completed and (active + completed), we can do
+    //  tests for marking tasks as complete
 }
