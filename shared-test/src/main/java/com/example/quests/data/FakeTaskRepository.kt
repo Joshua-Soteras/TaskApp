@@ -68,6 +68,12 @@ class FakeTaskRepository : TaskRepository {
         }
     }
 
+    override suspend fun activateTask(id: String) {
+        _savedTasks.value[id]?.let {
+            insertTask(it.copy(completionDate = 0L))
+        }
+    }
+
     /**
      * For testing setup, easier way to insert multiple tasks.
      */

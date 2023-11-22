@@ -140,4 +140,19 @@ class DefaultTaskRepositoryTest {
         // THEN - the task should be completed
         task?.isCompleted shouldBe true
     }
+
+    @Test
+    fun activateTask() = testScope.runTest {
+        // GIVEN - a completed task
+        val taskId = taskRepository.createTask("title")
+        taskRepository.completeTask(taskId)
+
+        // WHEN - activating the task
+        taskRepository.activateTask(taskId)
+        val task = taskRepository.getTaskStream(taskId).first()
+
+        // THEN - the task is not completed
+        task?.isCompleted shouldBe false
+    }
+
 }
