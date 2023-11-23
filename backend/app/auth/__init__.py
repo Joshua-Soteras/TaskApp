@@ -51,3 +51,26 @@ def register(username, password):
         abort(400, description='Username is already used')
     return make_response('', 200)
 docs.register(register, blueprint='auth')
+
+
+@doc(
+    summary='Login',
+    description='Logs in with the passed username and password, returns'
+        ' an access token.',
+    tags=['auth']
+)
+@bp.route('/login', methods=['POST'])
+@use_kwargs({
+    'username': fields.Str(required=True),
+    'password': fields.Str(required=True),
+})
+@marshal_with(None, code=200)
+def login(username, password):
+    user = get_user(Session, username)
+    if not user or not check_password_hash(user.password, password):
+        abort(401, 'Wrong username or password')
+
+    # Notice that we are passing in the actual sqlalchemy user object here
+    access_token = create_access_token(identity=user)
+    return jsonify(access_token=access_token)
+docs.register(login, blueprint='auth')
