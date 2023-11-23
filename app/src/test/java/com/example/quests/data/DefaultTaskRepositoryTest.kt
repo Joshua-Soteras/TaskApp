@@ -1,6 +1,7 @@
 package com.example.quests.data
 
-import com.example.quests.data.source.FakeTaskDao
+import com.example.quests.data.source.local.FakeTaskDao
+import com.example.quests.data.source.network.FakeNetworkDataSource
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldNotContain
@@ -20,9 +21,11 @@ class DefaultTaskRepositoryTest {
     private val task2 = Task(id = "2", title = "Title2", description = "Description2")
 
     private val localTasks = listOf(task1, task2).toLocal()
+    private val networkTasks = localTasks.toNetwork()
 
     // Test dependencies
     private lateinit var localDataSource: FakeTaskDao
+    private lateinit var networkDataSource: FakeNetworkDataSource
 
     /*
      * TODO: (tentative) the Kotlin testing codelab recommends using Dispatcher.Main instead
@@ -40,10 +43,13 @@ class DefaultTaskRepositoryTest {
     @Before
     fun createRepository() {
         localDataSource = FakeTaskDao(localTasks)
+        networkDataSource = FakeNetworkDataSource(networkTasks.toMutableList())
         // Get a reference to the class under test
         taskRepository = DefaultTaskRepository(
+            networkDataSource = networkDataSource,
             localDataSource = localDataSource,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            scope = testScope,
         )
     }
 
@@ -173,5 +179,10 @@ class DefaultTaskRepositoryTest {
         val tasks = taskRepository.getAllTasksStream().first()
         tasks shouldNotContain completedTask
         tasks shouldContain activeTask
+    }
+
+    @Test
+    fun test() = testScope.runTest {
+
     }
 }

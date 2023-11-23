@@ -6,6 +6,8 @@ import com.example.quests.data.DefaultTaskRepository
 import com.example.quests.data.TaskRepository
 import com.example.quests.data.source.local.QuestsDatabase
 import com.example.quests.data.source.local.TaskDao
+import com.example.quests.data.source.network.NetworkDataSource
+import com.example.quests.data.source.network.TaskNetworkDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -20,6 +22,15 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindTaskRepository(repository: DefaultTaskRepository): TaskRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class DataSourceModule {
+
+    @Singleton
+    @Binds
+    abstract fun bindNetworkDataSource(dataSource: TaskNetworkDataSource): NetworkDataSource
 }
 
 @Module

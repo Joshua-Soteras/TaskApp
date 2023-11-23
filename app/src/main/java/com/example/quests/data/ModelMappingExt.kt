@@ -4,6 +4,7 @@
 package com.example.quests.data
 
 import com.example.quests.data.source.local.LocalTask
+import com.example.quests.data.source.network.NetworkTask
 
 /**
  * Data model mapping extension functions.
@@ -14,6 +15,8 @@ import com.example.quests.data.source.local.LocalTask
  * - LocalTask: Internal model used to represent a task stored locally in a database. Obtained
  * using `toLocal`.
  *
+ * - NetworkTask: Internal model used to represent a task from the network. Obtained
+ * using `toNetwork`.
  */
 
 // External to local
@@ -40,8 +43,35 @@ fun LocalTask.toExternal() = Task(
 @JvmName("localToExternal")
 fun List<LocalTask>.toExternal() = map(LocalTask::toExternal)
 
-/**
- * TODO: when we figure out network stuff, converting between Local to Network stuff
- *   will be done here. Don't think we'll do Network to External, just let it go to Local
- *   then do Local to External.
- */
+// Network to local
+fun NetworkTask.toLocal() = LocalTask(
+    id = id,
+    title = title,
+    description = description,
+    completionDate = completionDate
+)
+
+@JvmName("networkToLocal")
+fun List<NetworkTask>.toLocal() = map(NetworkTask::toLocal)
+
+// Local to Network
+fun LocalTask.toNetwork() = NetworkTask(
+    id = id,
+    title = title,
+    description = description,
+    completionDate = completionDate
+)
+
+fun List<LocalTask>.toNetwork() = map(LocalTask::toNetwork)
+
+// External to Network
+fun Task.toNetwork() = toLocal().toNetwork()
+
+@JvmName("externalToNetwork")
+fun List<Task>.toNetwork() = map(Task::toNetwork)
+
+// Network to External
+fun NetworkTask.toExternal() = toLocal().toExternal()
+
+@JvmName("networkToExternal")
+fun List<NetworkTask>.toExternal() = map(NetworkTask::toExternal)

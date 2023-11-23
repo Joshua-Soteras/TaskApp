@@ -1,11 +1,15 @@
 package com.example.quests.data
 
 import com.example.quests.data.source.local.TaskDao
+import com.example.quests.data.source.network.NetworkDataSource
+import com.example.quests.di.ApplicationScope
 import com.example.quests.di.DefaultDispatcher
 import com.example.quests.ui.util.getCurrentDateTime
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
@@ -14,12 +18,20 @@ import javax.inject.Inject
  * Single entry point for managing tasks' data.
  *
  * @param localDataSource - The local data source
+ * @param networkDataSource - The network data source
  * @param dispatcher - The dispatcher to be used for long running / complex operations such as
  * mapping many models.
+ * @param scope - The coroutine scope used for deferred jobs where the result isn't important, such
+ * as sending data to the network. #[ This is what the architecture sample says, I still don't
+ * understand what's the problem of just using [dispatcher]. I guess the fact that they call
+ * saveTasksToNetwork() after every operation, while we only want it during a specific button
+ * press may be relevant. ]#
  */
 class DefaultTaskRepository @Inject constructor(
     private val localDataSource: TaskDao,
+    private val networkDataSource: NetworkDataSource,
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
+    @ApplicationScope private val scope: CoroutineScope,
 ) : TaskRepository {
 
     override fun getAllTasksStream(): Flow<List<Task>> {
@@ -70,5 +82,20 @@ class DefaultTaskRepository @Inject constructor(
 
     override suspend fun clearCompletedTasks() {
         localDataSource.deleteCompletedTasks()
+    }
+
+    override fun test() {
+        scope.launch {
+            try {
+                val localTasks = localDataSource.getAllTasksAsList()
+                val networkTasks = withContext(dispatcher) {
+                    localTasks.toNetwork()
+                }
+                networkDataSource.saveTasks(networkTasks)
+            } catch (e: Exception) {
+                // In a real app you'd handle the exception e.g. by exposing a `networkStatus` flow
+                // to an app level UI state holder which could then display a Toast message.
+            }
+        }
     }
 }

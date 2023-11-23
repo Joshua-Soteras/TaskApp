@@ -73,4 +73,8 @@ class HomeViewModel @Inject constructor(
     fun clearCompletedTasks() = viewModelScope.launch {
         taskRepository.clearCompletedTasks()
     }
+
+    fun testingFunction() {
+        taskRepository.test()
+    }
 }

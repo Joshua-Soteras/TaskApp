@@ -28,6 +28,9 @@ interface TaskDao {
     @Query("SELECT * FROM task")
     fun getAllTasks(): Flow<List<LocalTask>>
 
+    @Query("SELECT * FROM task")
+    fun getAllTasksAsList(): List<LocalTask>
+
     @Query("DELETE FROM task")
     fun deleteAllTasks()
 
