@@ -19,6 +19,11 @@ def bad_request(e):
     return error_response(400, e)
 
 
+@bp.app_errorhandler(401)
+def bad_request(e):
+    return error_response(400, e)
+
+
 @bp.app_errorhandler(404)
 def resource_not_found(e):
     return error_response(404, e)
