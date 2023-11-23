@@ -9,7 +9,6 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
     CORS(app)
-    jwt = JWTManager(app)
 
     app.config['CORS_HEADERS'] = 'Content-Type'
     app.config["JWT_SECRET_KEY"] = SECRET_KEY
@@ -27,16 +26,17 @@ def create_app(test_config=None):
     def shutdown_session(exception=None):
         database.Session.remove()
 
-    # from . import api
-    # app.register_blueprint(api.bp)
+    from . import api
+    app.register_blueprint(api.bp)
 
-    # from .api.v1 import api_spec_mapping, docs
-    # app.config.update(api_spec_mapping)
-    # docs.init_app(app)
+    from .auth import jwt, bp as auth_bp
+    app.register_blueprint(auth_bp)
+    jwt.init_app(app)
 
-    # from .auth import auth
-    # app.register_blueprint(auth.bp)
+    from .api.v1 import api_spec_mapping, docs
+    app.config.update(api_spec_mapping)
+    docs.init_app(app)
 
-    # print(app.url_map)
+    print(app.url_map)
 
     return app
