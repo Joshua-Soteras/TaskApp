@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, make_response, abort
-from flask_jwt_extended import create_access_token, JWTManager
+from flask_jwt_extended import create_access_token, create_refresh_token, JWTManager, jwt_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_apispec import doc, use_kwargs, marshal_with
 from webargs import fields
@@ -72,5 +72,23 @@ def login(username, password):
 
     # Notice that we are passing in the actual sqlalchemy user object here
     access_token = create_access_token(identity=user)
-    return jsonify(access_token=access_token)
+    refresh_token = create_refresh_token(identity=user)
+    return jsonify(access_token=access_token, refresh_token=refresh_token)
 docs.register(login, blueprint='auth')
+
+
+# We are using the `refresh=True` options in jwt_required to only allow
+# refresh tokens to access this route.
+@doc(
+    summary='Refresh access token',
+    description='Refreshes the access token associated with the passed'
+        ' refresh token.',
+    tags=['auth']
+)
+@bp.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+@marshal_with(None, code=200)
+def refresh():
+    access_token = create_access_token(identity=current_user)
+    return jsonify(access_token=access_token)
+docs.register(refresh, blueprint='auth')
