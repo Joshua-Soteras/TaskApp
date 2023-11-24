@@ -9,6 +9,7 @@ from app.database import Session
 
 from .service import (
     get,
+    update_data,
 )
 from .. import docs
 
@@ -28,3 +29,27 @@ def get_data():
     return jsonify(data=current_user.data)
 docs.register(get_data, blueprint='api.v1.user')
 
+
+@doc(
+    summary='Upload task data',
+    description='Updates the task data associated with the signed in user'
+        ' with the contents of the request body.',
+    tags=['data']
+)
+@bp.route('/data', methods=['POST'])
+@jwt_required()
+@use_kwargs({
+    'data': fields.Str(required=True)
+})
+@marshal_with(None, code=200)
+def upload_data(data):
+    try:
+        update_data(Session, current_user.username, data)
+    except Exception:
+        # Not sure what could cause this
+        abort(400, description='Unexpected error occurred when updating data.')
+    return jsonify(data=current_user.data)
+docs.register(upload_data, blueprint='api.v1.user')
+
+# test command
+# curl -X POST "http://localhost:5000/api/v1/users/data" -H "accept: application/json" -H "Authorization: Bearer <access token here>" -H "Content-Type: application/json" -d "{ \"data\": \"string\"}"

@@ -26,6 +26,14 @@ def create(db_session: scoped_session, username: str, password: str):
     return user
 
 
-def update(db_session: scoped_session, username: str, password):
-    pass
-    # TODO: should be able to update data from here?
+def update_data(db_session: scoped_session, username: str, data: str):
+    """Update the `data` field associated with the `username`"""
+    user = get(db_session, username)
+    user.data = data
+    try:
+        db_session.commit()
+    except Exception as e:
+        # No idea what could cause this
+        print(e)
+        raise e
+    return user
