@@ -19,3 +19,6 @@ api_spec_mapping = {
 }
 
 docs = FlaskApiSpec()
+
+from .user.views import bp as user_bp
+bp.register_blueprint(user_bp)
