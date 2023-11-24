@@ -63,7 +63,7 @@ fun HomeTopAppBar(
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.open_drawer)
+                    contentDescription = "Delete Button"
                 )
             }
             HomeDropdownMenu(
