@@ -75,6 +75,16 @@ dependencies {
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Retrofit with Kotlin serialization Converter
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    // Sandwich
+    implementation("com.github.skydoves:sandwich:2.0.4")
+    implementation("com.github.skydoves:sandwich-retrofit:2.0.4")
+    implementation("com.github.skydoves:sandwich-retrofit-serialization:2.0.4")
+
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.kotest:kotest-assertions-core:5.8.0")

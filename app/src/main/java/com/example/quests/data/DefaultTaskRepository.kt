@@ -30,6 +30,7 @@ import javax.inject.Inject
 class DefaultTaskRepository @Inject constructor(
     private val localDataSource: TaskDao,
     private val networkDataSource: NetworkDataSource,
+    // We need to inject the AuthDataSource
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationScope private val scope: CoroutineScope,
 ) : TaskRepository {
