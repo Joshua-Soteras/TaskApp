@@ -45,7 +45,13 @@ import com.example.quests.data.Task
 import com.example.quests.ui.navigation.NavigationDestination
 import com.example.quests.ui.theme.QuestsTheme
 import com.example.quests.ui.util.HomeTopAppBar
+import hilt_aggregated_deps._dagger_hilt_android_internal_modules_ApplicationContextModule
 import kotlinx.coroutines.launch
+
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
+
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -126,6 +132,7 @@ private fun HomeContent(
     onTaskCheckedChange: (Task, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -137,7 +144,21 @@ private fun HomeContent(
                 style = MaterialTheme.typography.titleLarge
             )
         } else {
+
+            /*
+                -Probably better if we move this to HomeViewModel?
+                -LazyListState: the option to observe when scrolling within the LazyColumn
+                -LaunchedEffect: will execute when taskList size changes (adding item, deleting item)
+             */
+            val lazyListState = rememberLazyListState()
+            LaunchedEffect(taskList.size) {
+                //lazyListState.animateScrollToItem(0 ,taskList.lastIndex)
+                //Another Option: same result
+                lazyListState.scrollToItem(taskList.lastIndex)
+            }
+
             LazyColumn(
+                state = lazyListState,
                 horizontalAlignment = Alignment.Start,
                 // Have to use Modifier instead of the passed modifier here or else there will
                 // be large padding on top of the list. No idea what's causing that
