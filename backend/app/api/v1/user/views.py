@@ -52,4 +52,4 @@ def upload_data(data):
 docs.register(upload_data, blueprint='api.v1.user')
 
 # test command
-# curl -X POST "http://localhost:5000/api/v1/users/data" -H "accept: application/json" -H "Authorization: Bearer <access token here>" -H "Content-Type: application/json" -d "{ \"data\": \"string\"}"
+# curl -X POST "http://localhost:5000/api/v1/users/data" -H "accept: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcwMDgwNDkxMywianRpIjoiNTMwOTlkZTItMThjOS00ZmIzLWJjMzUtMmRiNmE1ODFmZTVkIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InN0cmluZyIsIm5iZiI6MTcwMDgwNDkxMywiZXhwIjoxNzAwODA0OTczfQ.F7XcmAnz25soOk9Edggm0YRJUZGGln91qr0cqrIEv84" -H "Content-Type: application/json" -d "{ \"data\": \"string\"}"

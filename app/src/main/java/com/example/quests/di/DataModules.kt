@@ -6,6 +6,8 @@ import com.example.quests.data.DefaultTaskRepository
 import com.example.quests.data.TaskRepository
 import com.example.quests.data.source.local.QuestsDatabase
 import com.example.quests.data.source.local.TaskDao
+import com.example.quests.data.source.network.AuthDataSource
+import com.example.quests.data.source.network.AuthNetworkDataSource
 import com.example.quests.data.source.network.NetworkDataSource
 import com.example.quests.data.source.network.TaskNetworkDataSource
 import dagger.Binds
@@ -31,6 +33,11 @@ abstract class DataSourceModule {
     @Singleton
     @Binds
     abstract fun bindNetworkDataSource(dataSource: TaskNetworkDataSource): NetworkDataSource
+
+    // TODO: should probably put this in another file
+    @Singleton
+    @Binds
+    abstract fun bindAuthDataSource(dataSource: AuthNetworkDataSource): AuthDataSource
 }
 
 @Module

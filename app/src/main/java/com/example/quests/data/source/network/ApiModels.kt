@@ -11,11 +11,11 @@ data class Response(
     val refreshToken: String? = null,
     val msg: String? = null, // JWT messages, missing headers, expired tokens, etc.
     val data: List<NetworkTask>? = null, // Whatever is stored at /data endpoint
-    val error: Error? = null,
+    val error: ErrorMessage? = null,
 )
 
 @Serializable
-data class Error(
+data class ErrorMessage(
     val detail: String, // error message, could be nested, but we don't care here
     val status: String, // HTTP status code
     val title: String, // HTTP error response

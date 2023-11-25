@@ -1,6 +1,7 @@
 package com.example.quests.data
 
 import com.example.quests.data.source.local.TaskDao
+import com.example.quests.data.source.network.AuthDataSource
 import com.example.quests.data.source.network.NetworkDataSource
 import com.example.quests.di.ApplicationScope
 import com.example.quests.di.DefaultDispatcher
@@ -31,6 +32,7 @@ class DefaultTaskRepository @Inject constructor(
     private val localDataSource: TaskDao,
     private val networkDataSource: NetworkDataSource,
     // We need to inject the AuthDataSource
+    private val authNetworkDataSource: AuthDataSource,
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationScope private val scope: CoroutineScope,
 ) : TaskRepository {
@@ -93,6 +95,8 @@ class DefaultTaskRepository @Inject constructor(
                     localTasks.toNetwork()
                 }
                 networkDataSource.saveTasks(networkTasks)
+
+                authNetworkDataSource.login("string", "BLAH")
             } catch (e: Exception) {
                 // In a real app you'd handle the exception e.g. by exposing a `networkStatus` flow
                 // to an app level UI state holder which could then display a Toast message.
