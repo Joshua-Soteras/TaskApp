@@ -1,5 +1,6 @@
 package com.example.quests.di
 
+import com.example.quests.data.source.network.ApiNetworkClient
 import com.example.quests.data.source.network.ApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
@@ -32,4 +33,9 @@ object NetworkModule {
     @Provides
     fun provideApiService(@Named("Normal") retrofit: Retrofit): ApiService =
         retrofit.create(ApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideApiClient(apiService: ApiService): ApiNetworkClient =
+        ApiNetworkClient(apiService)
 }
