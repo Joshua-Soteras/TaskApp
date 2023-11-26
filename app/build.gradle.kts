@@ -84,7 +84,8 @@ dependencies {
     implementation("com.github.skydoves:sandwich:2.0.4")
     implementation("com.github.skydoves:sandwich-retrofit:2.0.4")
     implementation("com.github.skydoves:sandwich-retrofit-serialization:2.0.4")
-
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.kotest:kotest-assertions-core:5.8.0")
