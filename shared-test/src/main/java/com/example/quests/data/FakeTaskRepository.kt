@@ -83,11 +83,6 @@ class FakeTaskRepository : TaskRepository {
         }
     }
 
-    override fun test() {
-        // TODO: remove this later
-        println("nothing here")
-    }
-
     /**
      * For testing setup, easier way to insert multiple tasks.
      */

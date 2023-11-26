@@ -25,6 +25,4 @@ interface TaskRepository {
     suspend fun activateTask(id: String)
 
     suspend fun clearCompletedTasks()
-
-    fun test()
 }

@@ -88,7 +88,7 @@ fun AppModalDrawerSheet(
 
 @Preview
 @Composable
-fun PreviewAppModalDrawerSheet() {
+fun AppModalDrawerSheetPreview() {
     Surface {
         AppModalDrawerSheet(
             currentRoute = HomeDestination.route,

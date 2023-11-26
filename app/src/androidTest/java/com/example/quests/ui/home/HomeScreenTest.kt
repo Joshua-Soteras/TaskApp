@@ -35,6 +35,7 @@ class HomeScreenTest {
             QuestsTheme {
                 HomeScreen(
                     onAddTask = { },
+                    openDrawer = { },
                     viewModel = HomeViewModel(repository)
                 )
             }

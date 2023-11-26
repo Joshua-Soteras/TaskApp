@@ -55,8 +55,8 @@ fun AddTaskScreen(
             title = uiState.title,
             description = uiState.description,
             isEntryValid = uiState.isEntryValid,
-            onTitleChanged = viewModel::updateTitle,
-            onDescriptionChanged = viewModel::updateDescription,
+            onTitleChange = viewModel::updateTitle,
+            onDescriptionChange = viewModel::updateDescription,
             onSaveClick = {
                 coroutineScope.launch {
                     viewModel.createTask()
@@ -73,8 +73,8 @@ private fun AddTaskContent(
     title: String,
     description: String,
     isEntryValid: Boolean,
-    onTitleChanged: (String) -> Unit,
-    onDescriptionChanged: (String) -> Unit,
+    onTitleChange: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -87,7 +87,7 @@ private fun AddTaskContent(
     ) {
         OutlinedTextField(
             value = title,
-            onValueChange = onTitleChanged,
+            onValueChange = onTitleChange,
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.title_input_label)) },
             colors = OutlinedTextFieldDefaults.colors(
@@ -98,7 +98,7 @@ private fun AddTaskContent(
         )
         OutlinedTextField(
             value = description,
-            onValueChange = onDescriptionChanged,
+            onValueChange = onDescriptionChange,
             modifier = Modifier
                 .height(150.dp)
                 .fillMaxWidth(),

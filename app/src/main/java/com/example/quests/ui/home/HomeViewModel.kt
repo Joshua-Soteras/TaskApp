@@ -22,7 +22,7 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : ViewModel() {
 
     private val _snackbarMessage = MutableStateFlow<Int?>(null)
@@ -72,9 +72,5 @@ class HomeViewModel @Inject constructor(
 
     fun clearCompletedTasks() = viewModelScope.launch {
         taskRepository.clearCompletedTasks()
-    }
-
-    fun testingFunction() {
-        taskRepository.test()
     }
 }
