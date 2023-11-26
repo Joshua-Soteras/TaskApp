@@ -15,4 +15,6 @@
     <string name="clear_completed_tasks_dialog">Clear completed tasks?</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="my_tasks">My Tasks</string>
+    <string name="backup">Backup</string>
 </resources>

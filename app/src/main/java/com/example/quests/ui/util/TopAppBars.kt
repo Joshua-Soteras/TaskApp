@@ -37,6 +37,7 @@ import com.example.quests.R
 @Composable
 fun HomeTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    openDrawer: () -> Unit,
     clearCompletedTasks: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -51,7 +52,7 @@ fun HomeTopAppBar(
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = openDrawer) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.open_drawer)
@@ -61,7 +62,6 @@ fun HomeTopAppBar(
         actions = {
             HomeDropdownMenu(
                 onClearCompletedTasks = { openAlertDialog.value = !openAlertDialog.value },
-
             )
         }
     )
@@ -146,12 +146,40 @@ fun AddTaskTopAppBar(
     )
 }
 
+@Composable
+fun BackupAppBar(
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    openDrawer: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(text = stringResource(id = R.string.backup)) },
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.open_drawer)
+                )
+            }
+        },
+        actions = {
+            // TODO
+        }
+    )
+}
+
 
 @Preview
 @Composable
 private fun HomeTopAppBarPreview() {
     Surface {
-        HomeTopAppBar(clearCompletedTasks = { })
+        HomeTopAppBar(openDrawer = { }, clearCompletedTasks = { })
     }
 }
 

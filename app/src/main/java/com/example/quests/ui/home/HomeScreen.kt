@@ -56,6 +56,7 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     onAddTask: () -> Unit,
+    openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -64,7 +65,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    viewModel.testingFunction()
+//    viewModel.testingFunction()
 
     Scaffold(
         modifier = modifier
@@ -75,7 +76,8 @@ fun HomeScreen(
         topBar = {
             HomeTopAppBar(
                 scrollBehavior = scrollBehavior,
-                clearCompletedTasks = viewModel::clearCompletedTasks
+                openDrawer = openDrawer,
+                clearCompletedTasks = viewModel::clearCompletedTasks,
             )
         },
         floatingActionButton = {
