@@ -111,7 +111,7 @@ private fun HomeDropdownMenu(
         ) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                contentDescription = stringResource(R.string.home_dropdown_menu_description),
+                contentDescription = stringResource(R.string.dropdown_menu_description),
             )
         }
         DropdownMenu(
@@ -147,9 +147,10 @@ fun AddTaskTopAppBar(
 }
 
 @Composable
-fun BackupAppBar(
+fun BackupTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     openDrawer: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CenterAlignedTopAppBar(
@@ -169,11 +170,63 @@ fun BackupAppBar(
             }
         },
         actions = {
-            // TODO
+            BackupDropdownMenu(
+                onSignOut = onSignOut
+            )
         }
     )
 }
 
+@Composable
+fun BackupDropdownMenu(
+    onSignOut: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+    ) {
+        IconButton(
+            onClick = { expanded = !expanded },
+            modifier = Modifier.testTag("backup dropdown button")
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.dropdown_menu_description),
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.sign_out))},
+                onClick = { onSignOut(); expanded = !expanded },
+                modifier = Modifier.testTag("sign out button")
+            )
+        }
+    }
+}
+
+@Composable
+fun LoginTopAppBar(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(text = stringResource(id = R.string.login)) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        },
+    )
+}
 
 @Preview
 @Composable
@@ -196,5 +249,21 @@ private fun HomeDropdownMenuPreview() {
 private fun AddTaskTopAppBarPreview() {
     Surface {
         AddTaskTopAppBar({ })
+    }
+}
+
+@Preview
+@Composable
+private fun BackupTopAppBarPreview() {
+    Surface {
+        BackupTopAppBar(openDrawer = { }, onSignOut = { })
+    }
+}
+
+@Preview
+@Composable
+private fun LoginTopAppBarPreview() {
+    Surface {
+        LoginTopAppBar(onBack = { })
     }
 }
