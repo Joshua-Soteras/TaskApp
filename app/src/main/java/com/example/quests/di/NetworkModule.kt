@@ -28,6 +28,7 @@ object NetworkModule {
         .baseUrl(BASE_URL)
         .build()
 
+    @Singleton
     @Provides
     fun provideApiService(@Named("Normal") retrofit: Retrofit): ApiService =
         retrofit.create(ApiService::class.java)
