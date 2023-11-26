@@ -15,6 +15,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.quests.ui.backup.BackupDestination
 import com.example.quests.ui.backup.BackupScreen
+import com.example.quests.ui.backup.LoginDestination
+import com.example.quests.ui.backup.LoginScreen
 import com.example.quests.ui.home.HomeDestination
 import com.example.quests.ui.home.HomeScreen
 import com.example.quests.ui.task.AddTaskDestination
@@ -58,9 +60,15 @@ fun QuestsNavHost(
         composable(route = BackupDestination.route) {
             AppModalDrawer(drawerState, currentRoute, navActions) {
                 BackupScreen(
-                    openDrawer = { coroutineScope.launch { drawerState.open() } }
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    navigateToLogin = { navController.navigate(LoginDestination.route) }
                 )
             }
+        }
+        composable(route = LoginDestination.route) {
+            LoginScreen(
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

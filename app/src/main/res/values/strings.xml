@@ -18,6 +18,7 @@
     <string name="my_tasks">My Tasks</string>
     <string name="backup">Backup</string>
     <string name="login">Login</string>
+    <string name="not_logged_in_help_message">You need to be logged in to use Quests\' backup service.</string>
     <string name="sign_out">Sign out</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
