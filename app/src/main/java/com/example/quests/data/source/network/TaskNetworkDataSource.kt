@@ -1,5 +1,6 @@
 package com.example.quests.data.source.network
 
+import com.example.quests.data.source.network.model.NetworkTask
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

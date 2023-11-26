@@ -1,4 +1,4 @@
-package com.example.quests.data.source.network
+package com.example.quests.data.source.network.model
 
 import kotlinx.serialization.Serializable
 

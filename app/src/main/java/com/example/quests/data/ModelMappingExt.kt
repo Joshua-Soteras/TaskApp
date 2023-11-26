@@ -4,7 +4,7 @@
 package com.example.quests.data
 
 import com.example.quests.data.source.local.LocalTask
-import com.example.quests.data.source.network.NetworkTask
+import com.example.quests.data.source.network.model.NetworkTask
 
 /**
  * Data model mapping extension functions.

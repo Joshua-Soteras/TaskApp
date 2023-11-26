@@ -1,5 +1,7 @@
 package com.example.quests.data.source.network
 
+import com.example.quests.data.source.network.model.NetworkTask
+
 // TODO: just took this from architecture sample, didn't look at it carefully yet
 
 class FakeNetworkDataSource(
