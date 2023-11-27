@@ -28,4 +28,7 @@ interface ApiService {
         @Header("Authorization") bearerAuth: String,
         @Body data: QuestsRequest
     ): ApiResponse<QuestsResponse>
+
+    @GET("api/v1/users/data")
+    suspend fun getData(@Header("Authorization") bearerAuth: String): ApiResponse<QuestsResponse>
 }

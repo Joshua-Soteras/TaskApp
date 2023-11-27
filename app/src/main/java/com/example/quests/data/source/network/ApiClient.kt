@@ -16,5 +16,5 @@ interface ApiClient {
         newTasks: List<NetworkTask>
     ): ApiResponse<QuestsResponse>
 
-    suspend fun loadTasks(): List<NetworkTask>
+    suspend fun getTasks(accessToken: String): ApiResponse<QuestsResponse>
 }
