@@ -11,12 +11,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class BackupUiState(
-    val snackbarMessage: Int? = null,
+    val snackbarMessage: String? = null,
     val authToken: AuthToken? = null, // not sure if this is the best place to put this
+    var uploadAlertDialogIsOpen: Boolean = false,
+    var loadAlertDialogIsOpen: Boolean = false,
 )
 
 @HiltViewModel
@@ -25,13 +28,14 @@ class BackupViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _snackbarMessage = MutableStateFlow<Int?>(null)
+    private val _snackbarMessage = MutableStateFlow<String?>(null)
     private val _authToken = authRepository.authTokenFlow
 
+    private val _uiState = MutableStateFlow(BackupUiState())
     val uiState: StateFlow<BackupUiState> = combine(
-        _snackbarMessage, _authToken
-    ) { snackbarMessage, authToken ->
-        BackupUiState(
+        _uiState, _snackbarMessage, _authToken
+    ) { uiState, snackbarMessage, authToken ->
+        uiState.copy(
             snackbarMessage = snackbarMessage,
             authToken = if (authToken.isEmpty()) null else authToken
         )
@@ -46,18 +50,48 @@ class BackupViewModel @Inject constructor(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
+    fun updateUploadAlertDialogIsOpen(newBoolean: Boolean) {
+        _uiState.update {
+            it.copy(uploadAlertDialogIsOpen = newBoolean)
+        }
+    }
+
+    fun updateLoadAlertDialogIsOpen(newBoolean: Boolean) {
+        _uiState.update {
+            it.copy(loadAlertDialogIsOpen = newBoolean)
+        }
+    }
+
     fun signOut() {
         viewModelScope.launch {
             authRepository.clearAuthToken()
         }
     }
 
-    fun test() {
-        println(_authToken)
-        println(uiState.value)
+    fun resetSnackbarMessage() {
+        setSnackbarMessage(null)
     }
 
-    // before uploading or loading data, refresh the access token
-    // if the refresh token is expired, take them to login screen and say that they're
-    // credentials have expired and that they need to log in to refresh them
+    private fun setSnackbarMessage(message: String?) {
+        _snackbarMessage.value = message
+    }
+
+    fun uploadTasks() {
+        viewModelScope.launch {
+            taskRepository.saveTasksToNetwork(
+                // TODO: extract as string resource
+                onComplete = { setSnackbarMessage("Successfully uploaded tasks to network") },
+                onError = { setSnackbarMessage(it) }
+            )
+        }
+    }
+
+    fun loadTasks() {
+        viewModelScope.launch {
+            taskRepository.loadTasksFromNetwork(
+                onComplete = { setSnackbarMessage("Successfully loaded tasks") },
+                onError = { setSnackbarMessage(it) }
+            )
+        }
+    }
 }
