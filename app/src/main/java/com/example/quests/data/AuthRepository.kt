@@ -18,7 +18,13 @@ interface AuthRepository {
 
     suspend fun register(username: String, password: String)
 
-    suspend fun refresh()
+    suspend fun refresh(onComplete: () -> Unit, onError: (String?) -> Unit)
 
     suspend fun clearAuthToken()
+
+    suspend fun updateAccessToken(accessToken: String)
+
+    suspend fun updateRefreshToken(refreshToken: String)
+
+    suspend fun fetchInitialAuthToken(): AuthToken
 }

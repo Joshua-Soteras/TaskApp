@@ -11,10 +11,12 @@ import com.example.quests.di.DefaultDispatcher
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
 import com.skydoves.sandwich.retrofit.serialization.deserializeErrorBody
+import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import java.io.IOException
@@ -65,9 +67,9 @@ class DefaultAuthRepository @Inject constructor(
     ) {
         val response = apiClient.login(username, password)
         response.suspendOnSuccess {
-            data?.accessToken?.let { updateAccessToken(it) }
-            data?.refreshToken?.let { updateRefreshToken(it) }
-            onComplete();
+            data.accessToken?.let { updateAccessToken(it) }
+            data.refreshToken?.let { updateRefreshToken(it) }
+            onComplete()
         }.onError {
             val e: QuestsResponse? = this.deserializeErrorBody<String, QuestsResponse>()
             onError(e?.error?.detail)
@@ -80,25 +82,43 @@ class DefaultAuthRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun refresh() {
-        TODO("Not yet implemented")
+    /**
+     * Updates access token if refresh token is not expired. If refresh token is expired,
+     * signs the user out.
+     */
+    override suspend fun refresh(onComplete: () -> Unit, onError: (String?) -> Unit) {
+        val refreshToken: String = fetchInitialAuthToken().refreshToken
+        val response = apiClient.refresh(refreshToken)
+        response.suspendOnSuccess {
+            data.accessToken?.let { updateAccessToken(it) }
+            onComplete()
+        }.suspendOnError {
+            clearAuthToken()
+            // TODO: should extract string resource
+            onError("Refresh token has expired. Sign in again to refresh credentials.")
+        }.onException {
+            onError(message)
+        }
     }
 
     override suspend fun clearAuthToken() {
         dataStore.edit { it.clear() }
     }
 
-    suspend fun updateAccessToken(accessToken: String) {
+    override suspend fun updateAccessToken(accessToken: String) {
         dataStore.edit { preferences ->
             preferences[ACCESS_TOKEN] = accessToken
         }
     }
 
-    suspend fun updateRefreshToken(refreshToken: String) {
+    override suspend fun updateRefreshToken(refreshToken: String) {
         dataStore.edit { preferences ->
             preferences[REFRESH_TOKEN] = refreshToken
         }
     }
+
+    override suspend fun fetchInitialAuthToken() =
+        mapAuthToken(dataStore.data.first().toPreferences())
 
     private fun mapAuthToken(preferences: Preferences): AuthToken =
         AuthToken(
