@@ -9,7 +9,10 @@ interface ApiClient {
     suspend fun login(username: String, password: String): ApiResponse<QuestsResponse>
 
     // TODO: make these return ApiResponse<>
-    suspend fun loadTasks(): List<NetworkTask>
+    suspend fun saveTasks(
+        accessToken: String,
+        newTasks: List<NetworkTask>
+    ): ApiResponse<QuestsResponse>
 
-    suspend fun saveTasks(newTasks: List<NetworkTask>)
+    suspend fun loadTasks(): List<NetworkTask>
 }

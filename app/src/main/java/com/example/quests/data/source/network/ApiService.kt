@@ -1,9 +1,11 @@
 package com.example.quests.data.source.network
 
+import com.example.quests.data.source.network.model.QuestsRequest
 import com.example.quests.data.source.network.model.QuestsResponse
 import com.example.quests.data.source.network.model.User
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 /**
@@ -19,4 +21,10 @@ interface ApiService {
 
     @POST("auth/refresh")
     suspend fun refresh(): ApiResponse<QuestsResponse>
+
+    @POST("api/v1/users/data")
+    suspend fun saveData(
+        @Header("Authorization") bearerAuth: String,
+        @Body data: QuestsRequest
+    ): ApiResponse<QuestsResponse>
 }
