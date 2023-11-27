@@ -12,13 +12,11 @@ class User(Base):
 
     username: Mapped[str] = mapped_column(String, primary_key=True)
     password: Mapped[str] = mapped_column(String)
-    api_key: Mapped[Optional[str]] = mapped_column(String)
     data: Mapped[Optional[str]] = mapped_column(String)
 
     def __repr__(self) -> str:
         return (
             f'User(username={self.username!r},'
             f' password={self.password!r},'
-            f' api_key={self.api_key!r},'
             f' data={self.data!r})'
         )
