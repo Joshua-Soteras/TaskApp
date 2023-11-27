@@ -12,11 +12,18 @@ class FakeApiNetworkClient : ApiClient {
         TODO("Not yet implemented")
     }
 
-    override suspend fun loadTasks(): List<NetworkTask> {
+    override suspend fun refresh(refreshToken: String): ApiResponse<QuestsResponse> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveTasks(newTasks: List<NetworkTask>) {
+    override suspend fun saveTasks(
+        accessToken: String,
+        newTasks: List<NetworkTask>
+    ): ApiResponse<QuestsResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTasks(accessToken: String): ApiResponse<QuestsResponse> {
         TODO("Not yet implemented")
     }
 }

@@ -19,11 +19,23 @@ class FakeAuthRepository : AuthRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun refresh() {
+    override suspend fun refresh(onComplete: () -> Unit, onError: (String?) -> Unit) {
         TODO("Not yet implemented")
     }
 
     override suspend fun clearAuthToken() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateAccessToken(accessToken: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateRefreshToken(refreshToken: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun fetchInitialAuthToken(): AuthToken {
         TODO("Not yet implemented")
     }
 }

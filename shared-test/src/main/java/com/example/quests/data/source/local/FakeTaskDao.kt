@@ -21,6 +21,12 @@ class FakeTaskDao(initialTasks: List<LocalTask>? = emptyList()) : TaskDao {
         _tasks?.put(task.id, task)
     }
 
+    override suspend fun insertAll(tasks: List<LocalTask>) {
+        for (t in tasks) {
+            insert(t)
+        }
+    }
+
     override suspend fun update(task: LocalTask) {
         _tasks?.put(task.id, task)
     }
