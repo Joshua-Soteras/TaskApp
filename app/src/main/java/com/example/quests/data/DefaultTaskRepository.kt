@@ -1,15 +1,24 @@
 package com.example.quests.data
 
 import com.example.quests.data.source.local.TaskDao
-import com.example.quests.data.source.network.NetworkDataSource
+import com.example.quests.data.source.network.ApiClient
+import com.example.quests.data.source.network.model.NetworkTask
+import com.example.quests.data.source.network.model.QuestsResponse
 import com.example.quests.di.ApplicationScope
 import com.example.quests.di.DefaultDispatcher
 import com.example.quests.ui.util.getCurrentDateTime
+import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.retrofit.serialization.deserializeErrorBody
+import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import javax.inject.Inject
 
@@ -17,7 +26,9 @@ import javax.inject.Inject
  * Single entry point for managing tasks' data.
  *
  * @param localDataSource - The local data source
- * @param networkDataSource - The network data source
+ * @param apiClient - Data source used to interact with backend
+ * @param authRepository - Auth repository, used to refresh access tokens. #[ Ideally, we'd
+ * create a repository that contains both task and auth repositories, but whatever. ]#
  * @param dispatcher - The dispatcher to be used for long running / complex operations such as
  * mapping many models.
  * @param scope - The coroutine scope used for deferred jobs where the result isn't important, such
@@ -28,7 +39,8 @@ import javax.inject.Inject
  */
 class DefaultTaskRepository @Inject constructor(
     private val localDataSource: TaskDao,
-    private val networkDataSource: NetworkDataSource,
+    private val apiClient: ApiClient,
+    private val authRepository: AuthRepository,
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
     @ApplicationScope private val scope: CoroutineScope,
 ) : TaskRepository {
@@ -81,5 +93,36 @@ class DefaultTaskRepository @Inject constructor(
 
     override suspend fun clearCompletedTasks() {
         localDataSource.deleteCompletedTasks()
+    }
+
+    /**
+     * Uploads current list of local tasks to the network.
+     */
+    override suspend fun saveTasksToNetwork(onComplete: () -> Unit, onError: (String?) -> Unit) {
+        scope.launch {
+            authRepository.refresh({ }, onError)
+            val accessToken: String = authRepository.fetchInitialAuthToken().accessToken
+            // Return early so we don't waste time trying to upload tasks
+            if (accessToken.isNullOrEmpty()) {
+                return@launch
+            }
+            val localTasks = localDataSource.getAllTasksAsList()
+            val networkTasks = withContext(dispatcher) {
+                localTasks.toNetwork()
+            }
+            val response = apiClient.saveTasks(accessToken, networkTasks)
+            response.onSuccess {
+                onComplete()
+            }.onError {
+                val e: QuestsResponse? = this.deserializeErrorBody<String, QuestsResponse>()
+                if (e?.msg != null) {
+                    onError(e?.msg)
+                } else if (e?.error?.detail != null) {
+                    onError(e?.error?.detail)
+                }
+            }.onException {
+                onError(message)
+            }
+        }
     }
 }
