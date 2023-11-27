@@ -5,6 +5,7 @@ import com.example.quests.data.source.network.model.QuestsResponse
 import com.example.quests.data.source.network.model.User
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
@@ -20,7 +21,7 @@ interface ApiService {
     suspend fun register(@Body user: User): ApiResponse<Void>
 
     @POST("auth/refresh")
-    suspend fun refresh(): ApiResponse<QuestsResponse>
+    suspend fun refresh(@Header("Authorization") bearerAuth: String): ApiResponse<QuestsResponse>
 
     @POST("api/v1/users/data")
     suspend fun saveData(

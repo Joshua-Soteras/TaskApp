@@ -8,6 +8,8 @@ interface ApiClient {
 
     suspend fun login(username: String, password: String): ApiResponse<QuestsResponse>
 
+    suspend fun refresh(refreshToken: String): ApiResponse<QuestsResponse>
+
     // TODO: make these return ApiResponse<>
     suspend fun saveTasks(
         accessToken: String,
