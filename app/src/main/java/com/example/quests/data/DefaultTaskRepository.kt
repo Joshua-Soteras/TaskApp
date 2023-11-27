@@ -125,4 +125,47 @@ class DefaultTaskRepository @Inject constructor(
             }
         }
     }
+
+    /**
+     * Delete all tasks from local data source and replace them wih tasks from
+     * the network.
+     *
+     * According to the architecture sample, we use `withContext` to handle the
+     * case where the bulk `toLocal` mapping operation is complex.
+     */
+    override suspend fun loadTasksFromNetwork(onComplete: () -> Unit, onError: (String?) -> Unit) {
+        withContext(dispatcher) {
+            authRepository.refresh({ }, onError)
+            val accessToken: String = authRepository.fetchInitialAuthToken().accessToken
+            // Return early so we don't waste time trying to load tasks
+            if (accessToken.isNullOrEmpty()) {
+                return@withContext
+            }
+            val response = apiClient.getTasks(accessToken)
+            response.suspendOnSuccess {
+                val remoteTasks = data.data?.let {
+                    try {
+                        Json.decodeFromString<List<NetworkTask>>(it)
+                    } catch (e: Exception) {
+                        onError("Invalid data stored in server. Loading was aborted.")
+                        null
+                    }
+                }
+                if (remoteTasks != null) {
+                    localDataSource.deleteAllTasks()
+                    localDataSource.insertAll(remoteTasks.toLocal())
+                    onComplete()
+                }
+            }.onError {
+                val e: QuestsResponse? = this.deserializeErrorBody<String, QuestsResponse>()
+                if (e?.msg != null) {
+                    onError(e?.msg)
+                } else if (e?.error?.detail != null) {
+                    onError(e?.error?.detail)
+                }
+            }.onException {
+                onError(message)
+            }
+        }
+    }
 }

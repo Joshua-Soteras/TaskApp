@@ -16,6 +16,9 @@ interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(task: LocalTask)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(tasks: List<LocalTask>)
+
     @Update
     suspend fun update(task: LocalTask)
 
