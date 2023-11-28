@@ -16,6 +16,9 @@ class ApiNetworkClient @Inject constructor(
     override suspend fun login(username: String, password: String): ApiResponse<QuestsResponse> =
         apiService.login(User(username, password))
 
+    override suspend fun register(username: String, password: String): ApiResponse<Void> =
+        apiService.register(User(username, password))
+
     override suspend fun refresh(refreshToken: String): ApiResponse<QuestsResponse> =
         apiService.refresh("Bearer ".plus(refreshToken))
 

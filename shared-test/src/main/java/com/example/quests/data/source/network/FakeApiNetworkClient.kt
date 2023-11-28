@@ -12,6 +12,10 @@ class FakeApiNetworkClient : ApiClient {
         TODO("Not yet implemented")
     }
 
+    override suspend fun register(username: String, password: String): ApiResponse<Void> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun refresh(refreshToken: String): ApiResponse<QuestsResponse> {
         TODO("Not yet implemented")
     }
