@@ -16,7 +16,12 @@ interface AuthRepository {
         onError: (String?) -> Unit
     )
 
-    suspend fun register(username: String, password: String)
+    suspend fun register(
+        username: String,
+        password: String,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    )
 
     suspend fun refresh(onComplete: () -> Unit, onError: (String?) -> Unit)
 

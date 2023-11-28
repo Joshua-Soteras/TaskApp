@@ -10,6 +10,7 @@ import com.example.quests.data.source.network.model.QuestsResponse
 import com.example.quests.di.DefaultDispatcher
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onException
+import com.skydoves.sandwich.onSuccess
 import com.skydoves.sandwich.retrofit.serialization.deserializeErrorBody
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnSuccess
@@ -78,8 +79,25 @@ class DefaultAuthRepository @Inject constructor(
         }
     }
 
-    override suspend fun register(username: String, password: String) {
-        TODO("Not yet implemented")
+    /**
+     * Register with the passed [username] and [password].
+     */
+    override suspend fun register(
+        username: String,
+        password: String,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        val response = apiClient.register(username, password)
+        response.onSuccess {
+            onComplete()
+        }.onError {
+            // when username is already used
+            val e: QuestsResponse? = this.deserializeErrorBody<String, QuestsResponse>()
+            onError(e?.error?.detail)
+        }.onException {
+            onError(message)
+        }
     }
 
     /**

@@ -15,7 +15,12 @@ class FakeAuthRepository : AuthRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun register(username: String, password: String) {
+    override suspend fun register(
+        username: String,
+        password: String,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ) {
         TODO("Not yet implemented")
     }
 
