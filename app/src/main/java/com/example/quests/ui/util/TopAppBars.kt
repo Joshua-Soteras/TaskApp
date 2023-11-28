@@ -228,6 +228,25 @@ fun LoginTopAppBar(
     )
 }
 
+@Composable
+fun SignupTopAppBar(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(text = stringResource(id = R.string.sign_up)) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        },
+    )
+}
+
 @Preview
 @Composable
 private fun HomeTopAppBarPreview() {
@@ -265,5 +284,13 @@ private fun BackupTopAppBarPreview() {
 private fun LoginTopAppBarPreview() {
     Surface {
         LoginTopAppBar(onBack = { })
+    }
+}
+
+@Preview
+@Composable
+private fun SignupTopAppBarPreview() {
+    Surface {
+        SignupTopAppBar(onBack = { })
     }
 }
