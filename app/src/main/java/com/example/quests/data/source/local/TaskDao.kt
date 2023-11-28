@@ -16,6 +16,9 @@ interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(task: LocalTask)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(tasks: List<LocalTask>)
+
     @Update
     suspend fun update(task: LocalTask)
 
@@ -27,6 +30,9 @@ interface TaskDao {
 
     @Query("SELECT * FROM task")
     fun getAllTasks(): Flow<List<LocalTask>>
+
+    @Query("SELECT * FROM task")
+    fun getAllTasksAsList(): List<LocalTask>
 
     @Query("DELETE FROM task")
     fun deleteAllTasks()

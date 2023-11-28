@@ -83,6 +83,14 @@ class FakeTaskRepository : TaskRepository {
         }
     }
 
+    override suspend fun saveTasksToNetwork(onComplete: () -> Unit, onError: (String?) -> Unit) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun loadTasksFromNetwork(onComplete: () -> Unit, onError: (String?) -> Unit) {
+        TODO("Not yet implemented")
+    }
+
     /**
      * For testing setup, easier way to insert multiple tasks.
      */

@@ -22,7 +22,7 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : ViewModel() {
 
     private val _snackbarMessage = MutableStateFlow<Int?>(null)

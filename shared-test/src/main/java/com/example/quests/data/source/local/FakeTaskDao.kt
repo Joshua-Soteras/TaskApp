@@ -1,7 +1,5 @@
-package com.example.quests.data.source
+package com.example.quests.data.source.local
 
-import com.example.quests.data.source.local.LocalTask
-import com.example.quests.data.source.local.TaskDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -23,6 +21,12 @@ class FakeTaskDao(initialTasks: List<LocalTask>? = emptyList()) : TaskDao {
         _tasks?.put(task.id, task)
     }
 
+    override suspend fun insertAll(tasks: List<LocalTask>) {
+        for (t in tasks) {
+            insert(t)
+        }
+    }
+
     override suspend fun update(task: LocalTask) {
         _tasks?.put(task.id, task)
     }
@@ -37,6 +41,14 @@ class FakeTaskDao(initialTasks: List<LocalTask>? = emptyList()) : TaskDao {
 
     override fun getAllTasks(): Flow<List<LocalTask>> = flow {
         _tasks?.values?.toList()?.let { emit(it) }
+    }
+
+    override fun getAllTasksAsList(): List<LocalTask> {
+        if (tasks == null) {
+            println("`tasks` list is null")
+            return listOf()
+        }
+        return tasks as List<LocalTask>
     }
 
     override fun deleteAllTasks() {

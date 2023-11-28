@@ -25,4 +25,8 @@ interface TaskRepository {
     suspend fun activateTask(id: String)
 
     suspend fun clearCompletedTasks()
+
+    suspend fun saveTasksToNetwork(onComplete: () -> Unit, onError: (String?) -> Unit)
+
+    suspend fun loadTasksFromNetwork(onComplete: () -> Unit, onError: (String?) -> Unit)
 }
