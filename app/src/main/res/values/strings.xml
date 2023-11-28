@@ -28,4 +28,5 @@
     <string name="load_from_network">Load from network</string>
     <string name="load_tasks_confirmation_title">Load tasks from network?</string>
     <string name="load_tasks_confirmation_description">This will replace the tasks on your device with whatever is stored in Quests\' backup service. This action is irreversible.</string>
+    <string name="sign_up">Sign up</string>
 </resources>

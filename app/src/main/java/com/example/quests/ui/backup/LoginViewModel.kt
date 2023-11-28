@@ -66,7 +66,7 @@ class LoginViewModel @Inject constructor(
         setSnackbarMessage(null)
     }
 
-    private fun setSnackbarMessage(message: String?) {
+    fun setSnackbarMessage(message: String?) {
         _snackbarMessage.value = message
     }
 

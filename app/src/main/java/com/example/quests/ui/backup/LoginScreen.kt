@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -56,12 +57,21 @@ object LoginDestination : NavigationDestination {
 @Composable
 fun LoginScreen(
     navigateBack: () -> Unit,
+    navigateToSignup: () -> Unit,
+    messageFromSignup: String?,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var messageFromSignup = remember { messageFromSignup }
+
+    // After we consume the messageFromSignup, set it to null so we don't use it again
+    if (messageFromSignup != null) {
+        viewModel.setSnackbarMessage(messageFromSignup)
+        messageFromSignup = null
+    }
 
     Scaffold(
         modifier = modifier
@@ -94,6 +104,7 @@ fun LoginScreen(
             onUsernameChange = viewModel::updateUsername,
             onPasswordChange = viewModel::updatePassword,
             onLogin = { viewModel.login(navigateBack) },
+            onSignup = navigateToSignup,
             modifier = Modifier.padding(paddingValues)
         )
     }
@@ -106,6 +117,7 @@ fun LoginContent(
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
+    onSignup: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var passwordVisibility: Boolean by remember { mutableStateOf(false) }
@@ -167,6 +179,13 @@ fun LoginContent(
         ) {
             Text(text = stringResource(R.string.login))
         }
+        OutlinedButton(
+            onClick = { focusManager.clearFocus(); onSignup() },
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(R.string.sign_up))
+        }
     }
 }
 
@@ -179,7 +198,8 @@ fun PreviewLoginContent() {
             password = "password",
             onUsernameChange = { },
             onPasswordChange = { },
-            onLogin = { }
+            onLogin = { },
+            onSignup = { }
         )
     }
 }
