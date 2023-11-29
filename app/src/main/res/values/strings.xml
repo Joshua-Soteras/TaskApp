@@ -30,4 +30,7 @@
     <string name="load_tasks_confirmation_description">This will replace the tasks on your device with whatever is stored in Quests\' backup service. This action is irreversible.</string>
     <string name="successfully_created_new_user">Successfully created new user</string>
     <string name="sign_up">Sign up</string>
+    <string name="no_date">No date</string>
+    <string name="no_due_date">No due date</string>
+    <string name="due_date">Due date</string>
 </resources>
