@@ -4,22 +4,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,27 +85,39 @@ private fun AddTaskContent(
         modifier
             .fillMaxWidth()
             // TODO: extract this to dimen res
-            .padding(all = 16.dp)
+            // .padding(all = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        OutlinedTextField(
+        TextField(
             value = title,
             onValueChange = onTitleChange,
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.title_input_label)) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.title_24px),
+                    contentDescription = null
+                )
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
         )
-        OutlinedTextField(
+        TextField(
             value = description,
             onValueChange = onDescriptionChange,
             modifier = Modifier
-                .height(150.dp)
+                .heightIn(1.dp, Dp.Infinity)
                 .fillMaxWidth(),
             label = { Text(stringResource(R.string.description_label_input)) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.subject_24px),
+                    contentDescription = null
+                )
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
