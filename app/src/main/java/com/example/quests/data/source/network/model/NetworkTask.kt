@@ -14,5 +14,6 @@ data class NetworkTask(
     val id: String,
     val title: String = "",
     val description: String = "",
-    var completionDate: Long = 0L
+    var completionDate: Long = 0L,
+    var dueDate: Long = 0L
 )
