@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Checkbox
@@ -22,6 +23,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,12 +47,7 @@ import com.example.quests.data.Task
 import com.example.quests.ui.navigation.NavigationDestination
 import com.example.quests.ui.theme.QuestsTheme
 import com.example.quests.ui.util.HomeTopAppBar
-import hilt_aggregated_deps._dagger_hilt_android_internal_modules_ApplicationContextModule
 import kotlinx.coroutines.launch
-
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 
 
 object HomeDestination : NavigationDestination {
@@ -187,7 +184,6 @@ private fun TaskItem(
     modifier: Modifier = Modifier
 ) {
     Row {
-        val undoMessage = stringResource(R.string.snackbar_undo)
         Checkbox(
             checked = task.isCompleted,
             onCheckedChange = onCheckedChange,
