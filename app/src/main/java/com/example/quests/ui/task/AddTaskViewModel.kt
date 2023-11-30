@@ -3,6 +3,7 @@ package com.example.quests.ui.task
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quests.data.TaskRepository
+import com.example.quests.ui.util.offsetUTCToLocalTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,7 +51,7 @@ class AddTaskViewModel @Inject constructor(
 
     fun updateSelectedDate(newSelectedDate: Long?) {
         _uiState.update {
-            it.copy(selectedDate = newSelectedDate)
+            it.copy(selectedDate = newSelectedDate?.let { t -> offsetUTCToLocalTime(t) })
         }
         validateEntry()
     }

@@ -83,7 +83,7 @@ fun AddTaskScreen(
                     navigateBack()
                 }
             },
-            date = datePickerState.selectedDateMillis?.let {
+            date = uiState.selectedDate?.let {
                 Date(it).toString("EEE, MMM d, yyyy")
             },
             onDatePickerClick = { openDateDialog.value = true },
