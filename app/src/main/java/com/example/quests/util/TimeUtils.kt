@@ -1,4 +1,4 @@
-package com.example.quests.ui.util
+package com.example.quests.util
 
 import java.time.Instant
 import java.time.LocalDate
