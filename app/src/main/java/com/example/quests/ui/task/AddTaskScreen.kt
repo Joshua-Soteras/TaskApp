@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,10 +41,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.quests.R
 import com.example.quests.ui.navigation.NavigationDestination
 import com.example.quests.ui.util.AddTaskTopAppBar
-import com.example.quests.ui.util.toString
+import com.example.quests.ui.util.TimePickerDialog
+import com.example.quests.util.toEpochMilli
+import com.example.quests.util.toFormattedString
+import com.example.quests.util.toLocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.util.Date
 
 object AddTaskDestination : NavigationDestination {
     override val route = "add_task"
@@ -59,7 +62,7 @@ fun AddTaskScreen(
     viewModel: AddTaskViewModel = hiltViewModel()
 ) {
     val openDateDialog = remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
+    val openTimeDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -68,7 +71,7 @@ fun AddTaskScreen(
                 onBack = navigateBack
             )
         }
-    ) { paddingValues ->  
+    ) { paddingValues ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         AddTaskContent(
@@ -83,14 +86,19 @@ fun AddTaskScreen(
                     navigateBack()
                 }
             },
-            date = uiState.selectedDate?.let {
-                Date(it).toString("EEE, MMM d, yyyy")
-            },
+            // n.b., time is not null only if date is not null, but date can be not null
+            // while time is null
+            date = uiState.selectedDate?.toFormattedString(),
             onDatePickerClick = { openDateDialog.value = true },
+            time = uiState.selectedTime?.toFormattedString(),
+            onTimePickerClick = { openTimeDialog.value = true },
             modifier = Modifier.padding(paddingValues)
         )
 
         if (openDateDialog.value) {
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = uiState.selectedDate?.atStartOfDay()?.toEpochMilli()
+            )
             DatePickerDialog(
                 onDismissRequest = { openDateDialog.value = false },
                 // Dumb hack, the dialog does not resize to fit other composables so we're
@@ -112,8 +120,9 @@ fun AddTaskScreen(
                         TextButton(
                             onClick = {
                                 openDateDialog.value = false
-                                viewModel.updateSelectedDate(datePickerState.selectedDateMillis)
-                                println(datePickerState.selectedDateMillis)
+                                viewModel.updateSelectedDate(
+                                    datePickerState.selectedDateMillis?.toLocalDate()
+                                )
                             },
                         ) {
                             Text(stringResource(R.string.ok))
@@ -125,6 +134,21 @@ fun AddTaskScreen(
                     state = datePickerState
                 )
             }
+        }
+
+        if (openTimeDialog.value) {
+            TimePickerDialog(
+                onCancel = { openTimeDialog.value = false },
+                onConfirm = {
+                    openTimeDialog.value = false
+                    viewModel.updateSelectedTime(it)
+                },
+                setNoTime = {
+                    openTimeDialog.value = false
+                    viewModel.updateSelectedTime(null)
+                },
+                initial = uiState.selectedTime
+            )
         }
     }
 }
@@ -139,13 +163,13 @@ private fun AddTaskContent(
     onSaveClick: () -> Unit,
     date: String?,
     onDatePickerClick: () -> Unit,
+    time: String?,
+    onTimePickerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier
             .fillMaxWidth()
-            // TODO: extract this to dimen res
-            // .padding(all = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         TextField(
@@ -186,6 +210,7 @@ private fun AddTaskContent(
         )
         // Dumb hack because Compose still gives space to label even if label is null
         DatePickerTextField(date, onDatePickerClick)
+        TimePickerTextField(time, onTimePickerClick)
         Spacer(modifier = Modifier.size(32.dp)) // TODO: extract this as dimen res
         Button(
             onClick = onSaveClick,
@@ -199,26 +224,27 @@ private fun AddTaskContent(
 }
 
 @Composable
+private fun disabledTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+    // Disabled colors https://stackoverflow.com/a/76922565
+    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+    disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledBorderColor = MaterialTheme.colorScheme.outline,
+    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
+)
+
+@Composable
 private fun DatePickerTextField(
     date: String?,
     onDatePickerClick: () -> Unit
 ) {
-    val colors = OutlinedTextFieldDefaults.colors(
-        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-        unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-        // Disabled colors https://stackoverflow.com/a/76922565
-        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-        disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        disabledBorderColor = MaterialTheme.colorScheme.outline,
-        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
-        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
-    )
-
     if (date == null) {
         TextField(
             value = stringResource(R.string.no_due_date),
@@ -230,7 +256,7 @@ private fun DatePickerTextField(
             leadingIcon = {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
             },
-            colors = colors
+            colors = disabledTextFieldColors()
         )
     } else {
         TextField(
@@ -244,7 +270,48 @@ private fun DatePickerTextField(
             leadingIcon = {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
             },
-            colors = colors,
+            colors = disabledTextFieldColors(),
+        )
+    }
+}
+
+@Composable
+private fun TimePickerTextField(
+    time: String?,
+    onTimePickerClick: () -> Unit
+) {
+    if (time == null) {
+        TextField(
+            value = stringResource(R.string.no_due_time),
+            onValueChange = { },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onTimePickerClick() },
+            enabled = false,
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.schedule_24px),
+                    contentDescription = null
+                )
+            },
+            colors = disabledTextFieldColors()
+        )
+    } else {
+        TextField(
+            value = time,
+            onValueChange = { },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onTimePickerClick() },
+            enabled = false,
+            label = { Text(stringResource(R.string.due_time)) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.schedule_24px),
+                    contentDescription = null
+                )
+            },
+            colors = disabledTextFieldColors(),
         )
     }
 }

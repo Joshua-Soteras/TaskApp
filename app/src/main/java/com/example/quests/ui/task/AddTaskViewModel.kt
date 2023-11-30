@@ -3,22 +3,24 @@ package com.example.quests.ui.task
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quests.data.TaskRepository
-import com.example.quests.ui.util.offsetUTCToLocalTime
+import com.example.quests.util.isWithinToday
+import com.example.quests.util.toEpochMilli
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 import javax.inject.Inject
 
 data class AddTaskUiState(
     val title: String = "",
     val description: String = "",
+    val selectedDate: LocalDate? = null,
+    val selectedTime: LocalTime? = null,
     val userMessage: Int? = null,
-    val selectedDate: Long? = null,
-    val selectedHour: Int? = null,
-    val selectedMinute: Int? = null,
     val isEntryValid: Boolean = false,
     val isTaskSaved: Boolean = false
 )
@@ -49,21 +51,33 @@ class AddTaskViewModel @Inject constructor(
         validateEntry()
     }
 
-    fun updateSelectedDate(newSelectedDate: Long?) {
+    fun updateSelectedDate(newSelectedDate: LocalDate?) {
         _uiState.update {
-            it.copy(selectedDate = newSelectedDate?.let { t -> offsetUTCToLocalTime(t) })
+            it.copy(selectedDate = newSelectedDate)
+        }
+        // If there is date is null, time is null
+        if (newSelectedDate == null) {
+            updateSelectedTime(null)
         }
         validateEntry()
     }
 
-    // give users option to choose no date and no time
-    // they can choose yes date, no time (the time will be assumed to be last ms of day)
-    // they cannot choose yes time, not date. if they choose any time, automatically
-    // choose tomorrow for them. if they try to set it to no date, set it to no time.
-    //
-    // take the current time, and the passed time. if the hour and minute of the passed
-    // time is greater than current time, then set due date to today. if hour and
-    // minute of passed time is less than current time, then set due date to tomorrow.
+    fun updateSelectedTime(newSelectedTime: LocalTime?) {
+        _uiState.update {
+            it.copy(selectedTime = newSelectedTime)
+        }
+        // If newSelectedTime is not null and selectedDate is null, choose a new selectedDate
+        // depending on the current time.
+        val selectedDate = _uiState.value.selectedDate
+        if (newSelectedTime != null && selectedDate == null) {
+            if (newSelectedTime.isWithinToday()) {
+                updateSelectedDate(LocalDate.now()) // Today
+            } else {
+                updateSelectedDate(LocalDate.now().plusDays(1)) // Tomorrow
+            }
+        }
+        validateEntry()
+    }
 
     private fun validateEntry() {
         _uiState.update {
@@ -73,7 +87,14 @@ class AddTaskViewModel @Inject constructor(
 
     fun createTask() {
         viewModelScope.launch {
-            taskRepository.createTask(uiState.value.title, uiState.value.description)
+            taskRepository.createTask(
+                title = uiState.value.title,
+                description = uiState.value.description,
+                dueDate = uiState.value.selectedDate
+                    ?.atTime(uiState.value.selectedTime)
+                    ?.toEpochMilli()
+                    ?: 0L
+            )
             _uiState.update {
                 it.copy(isTaskSaved = true)
             }
