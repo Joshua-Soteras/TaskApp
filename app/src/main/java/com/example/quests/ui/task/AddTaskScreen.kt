@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -226,10 +228,7 @@ private fun DatePickerTextField(
                 .clickable { onDatePickerClick() },
             enabled = false,
             leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.calendar_month_24px),
-                    contentDescription = null
-                )
+                Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
             },
             colors = colors
         )
@@ -243,10 +242,7 @@ private fun DatePickerTextField(
             enabled = false,
             label = { Text(stringResource(R.string.due_date)) },
             leadingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.calendar_month_24px),
-                    contentDescription = null
-                )
+                Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
             },
             colors = colors,
         )
