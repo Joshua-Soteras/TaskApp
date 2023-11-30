@@ -33,4 +33,8 @@
     <string name="no_date">No date</string>
     <string name="no_due_date">No due date</string>
     <string name="due_date">Due date</string>
+    <string name="no_time">No time</string>
+    <string name="select_time">Select time</string>
+    <string name="switch_to_text_input">Switch to Text Input</string>
+    <string name="switch_to_touch_input">Switch to Touch Input</string>
 </resources>
