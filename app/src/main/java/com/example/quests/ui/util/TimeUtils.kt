@@ -1,31 +1,40 @@
 package com.example.quests.ui.util
 
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
-import java.util.TimeZone
+
+fun Long.toLocalDate(): LocalDate = Instant.ofEpochMilli(this)
+    .atZone(ZoneId.systemDefault())
+    .toLocalDate()
+
+fun LocalDate.toFormattedString(
+    pattern: String = "EEEE, MMM d, yyyy", // e.g., Thursday, Nov 30, 2023
+    locale: Locale = Locale.getDefault()
+): String = this.format(DateTimeFormatter.ofPattern(pattern, locale))
 
 /**
- * Functions taken from https://stackoverflow.com/a/51394768
+ * Combines this date with a [time] to create a LocalDateTime.
+ * Same as java.time.LocalDate(LocalTime time) except that this one
+ * sets the time to be the end of the day if [time] is null.
  */
-fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String {
-    val formatter = SimpleDateFormat(format, locale)
-    return formatter.format(this)
+fun LocalDate.atTime(time: LocalTime?): LocalDateTime = when {
+    time == null -> this.atTime(LocalTime.MAX)
+    else -> this.atTime(time)
 }
 
-fun getCurrentDateTime(): Date {
-    return Calendar.getInstance().time
-}
+fun LocalTime.toFormattedString(
+    pattern: String = "h:mm a", // e.g., 2:12 AM
+    locale: Locale = Locale.getDefault()
+): String = this.format(DateTimeFormatter.ofPattern(pattern, locale))
 
-/**
- * Given [time] in UTC time, we negate the effects of the [offset]
- * to get the time in another time zone (by default, the default
- * TimeZone for the JVM).
- * E.g., if we had 12 AM UTC and wanted 12 AM in PST, we would negate
- * the offset of PST (PST is UTC-08:00 so we would add 8 hours).
- */
-fun offsetUTCToLocalTime(
-    time: Long,
-    offset: Int = TimeZone.getDefault().rawOffset
-): Long = time - offset.toLong()
+fun LocalTime.isWithinToday(): Boolean = this.isAfter(LocalTime.now())
+
+fun LocalDateTime.toEpochMilli(): Long =
+    this.atZone(ZoneId.systemDefault())
+        .toInstant()
+        .toEpochMilli()
