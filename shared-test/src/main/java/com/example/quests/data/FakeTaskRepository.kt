@@ -1,12 +1,13 @@
 package com.example.quests.data
 
-import com.example.quests.ui.util.getCurrentDateTime
+import com.example.quests.util.toEpochMilli
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import java.time.LocalDateTime
 import java.util.UUID
 
 class FakeTaskRepository : TaskRepository {
@@ -27,12 +28,17 @@ class FakeTaskRepository : TaskRepository {
         }
     }
 
-    override suspend fun createTask(title: String, description: String): String {
+    override suspend fun createTask(
+        title: String,
+        description: String,
+        dueDate: Long,
+    ): String {
         val taskId = UUID.randomUUID().toString()
         val task = Task(
             id = taskId,
             title = title,
-            description = description
+            description = description,
+            dueDate = dueDate
         )
         insertTask(task)
         return taskId
@@ -64,7 +70,7 @@ class FakeTaskRepository : TaskRepository {
 
     override suspend fun completeTask(id: String) {
         _savedTasks.value[id]?.let {
-            insertTask(it.copy(completionDate = getCurrentDateTime().time))
+            insertTask(it.copy(completionDate = LocalDateTime.now().toEpochMilli()))
         }
     }
 
