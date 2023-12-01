@@ -160,7 +160,10 @@ private fun HomeContent(
                 state = lazyListState,
                 horizontalAlignment = Alignment.Start,
                 // Have to use Modifier instead of the passed modifier here or else there will
-                // be large padding on top of the list. No idea what's causing that
+                // be large padding on top of the list. No idea what's causing that.
+                // EDIT: think I know what was causing that, lowercase `modifier` has the
+                // paddingValues from the Scaffold which is applied to not make the TopAppBar
+                // cover the composable. So don't use `modifier` from the Scaffold.
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(taskList) {task ->
