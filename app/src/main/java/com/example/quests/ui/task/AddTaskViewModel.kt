@@ -20,7 +20,7 @@ data class AddTaskUiState(
     val description: String = "",
     val selectedDate: LocalDate? = null,
     val selectedTime: LocalTime? = null,
-    val userMessage: Int? = null,
+//    val userMessage: Int? = null, don't think we use this for anything
     val isEntryValid: Boolean = false,
     val isTaskSaved: Boolean = false
 )

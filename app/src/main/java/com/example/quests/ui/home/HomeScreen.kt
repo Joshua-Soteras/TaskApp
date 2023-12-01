@@ -262,7 +262,7 @@ fun TaskItemPreview() {
 fun TaskItemCompletedPreview() {
     QuestsTheme {
         TaskItem(
-            task = Task("1", "title", "description", completionDate = 1L),
+            task = Task("1", "item title", "a description", completionDate = 1L),
             onCheckedChange = { }
         )
     }
