@@ -49,6 +49,7 @@ import hilt_aggregated_deps._dagger_hilt_android_internal_modules_ApplicationCon
 import kotlinx.coroutines.launch
 
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Card
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 
@@ -184,38 +185,42 @@ private fun TaskItem(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row {
-        val undoMessage = stringResource(R.string.snackbar_undo)
-        Checkbox(
-            checked = task.isCompleted,
-            onCheckedChange = onCheckedChange,
-            modifier = Modifier.alignByBaseline()
-        )
-        Column(
-            // TODO: extract to dimensionResource
-            modifier = Modifier.padding(top = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = task.title,
-                style = MaterialTheme.typography.titleLarge,
-                textDecoration = if (task.isCompleted) {
-                    TextDecoration.LineThrough
-                } else {
-                    null
-                },
-                // TODO: probably need to change this if there's a dark mode
-                //  use the color from a color scheme or something?
-                color = if (task.isCompleted) {
-                    Color.Gray
-                } else {
-                    Color.Black
-                }
+    Card(
+        modifier = modifier
+    ){
+        Row {
+            val undoMessage = stringResource(R.string.snackbar_undo)
+            Checkbox(
+                checked = task.isCompleted,
+                onCheckedChange = onCheckedChange,
+                modifier = Modifier.alignByBaseline()
             )
-            Text(
-                text = task.description,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Column(
+                // TODO: extract to dimensionResource
+                modifier = Modifier.padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    textDecoration = if (task.isCompleted) {
+                        TextDecoration.LineThrough
+                    } else {
+                        null
+                    },
+                    // TODO: probably need to change this if there's a dark mode
+                    //  use the color from a color scheme or something?
+                    color = if (task.isCompleted) {
+                        Color.Gray
+                    } else {
+                        Color.Black
+                    }
+                )
+                Text(
+                    text = task.description,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
         }
     }
 }
