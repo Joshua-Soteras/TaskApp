@@ -1,5 +1,8 @@
 package com.example.quests.data
 
+import com.example.quests.util.toEpochMilli
+import java.time.LocalDateTime
+
 /**
  * Immutable model class for a Task.
  *
@@ -23,4 +26,11 @@ data class Task(
      */
     val hasDueDate
         get() = dueDate > 0
+
+    /**
+     * Larger the values, the further away we are from epoch, so if we
+     * are behind the local date time, then we are late
+     */
+    val isLate
+        get() = dueDate < LocalDateTime.now().toEpochMilli()
 }

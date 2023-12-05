@@ -3,6 +3,7 @@ package com.example.quests.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,7 +32,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -39,6 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,6 +48,8 @@ import com.example.quests.data.Task
 import com.example.quests.ui.navigation.NavigationDestination
 import com.example.quests.ui.theme.QuestsTheme
 import com.example.quests.ui.util.HomeTopAppBar
+import com.example.quests.util.toFormattedString
+import com.example.quests.util.toLocalDateTime
 import kotlinx.coroutines.launch
 
 
@@ -186,33 +189,56 @@ private fun TaskItem(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row {
+    Row(
+        modifier = modifier
+    ) {
         Checkbox(
             checked = task.isCompleted,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.alignByBaseline()
+            modifier = Modifier.alignBy { it.measuredHeight / 1 }
         )
         Column(
             // TODO: extract to dimensionResource
             modifier = Modifier.padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = task.title,
-                style = MaterialTheme.typography.titleLarge,
-                textDecoration = if (task.isCompleted) {
-                    TextDecoration.LineThrough
-                } else {
-                    null
-                },
-                // TODO: probably need to change this if there's a dark mode
-                //  use the color from a color scheme or something?
-                color = if (task.isCompleted) {
-                    Color.Gray
-                } else {
-                    Color.Black
+            Row(
+                modifier = Modifier
+                    .alignBy { it.measuredHeight / 2 }
+            ) {
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    textDecoration = if (task.isCompleted) {
+                        TextDecoration.LineThrough
+                    } else {
+                        null
+                    },
+                    // TODO: probably need to change this if there's a dark mode
+                    //  use the color from a color scheme or something?
+                    color = if (task.isCompleted) {
+                        MaterialTheme.colorScheme.outline
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1, // get rid of this is if you want multiline title
+                    modifier = Modifier.weight(2f)
+                )
+                if (task.hasDueDate) {
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        task.dueDate.toLocalDateTime().toFormattedString(),
+                        maxLines = 1,
+                        textAlign = TextAlign.Right,
+                        color = if (!task.isCompleted && task.isLate) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.outline
+                        }
+                    )
                 }
-            )
+            }
             Text(
                 text = task.description,
                 style = MaterialTheme.typography.titleMedium
