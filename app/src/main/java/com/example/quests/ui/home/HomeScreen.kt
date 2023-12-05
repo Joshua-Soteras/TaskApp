@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -69,7 +70,16 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = enterAlwaysScrollBehavior()
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    if (uiState.newTaskAvailable) {
+        LaunchedEffect(lazyListState) {
+            lazyListState.scrollToItem(uiState.taskList.lastIndex)
+        }
+        // Set this to null after composition
+        uiState.newTaskAvailable = false
+    }
 
     Scaffold(
         modifier = modifier
@@ -120,6 +130,7 @@ fun HomeScreen(
         HomeContent(
             taskList = uiState.taskList,
             onTaskCheckedChange = viewModel::completeTask,
+            lazyListState = lazyListState,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
@@ -132,6 +143,7 @@ fun HomeScreen(
 private fun HomeContent(
     taskList: List<Task>,
     onTaskCheckedChange: (Task, Boolean) -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
     modifier: Modifier = Modifier
 ) {
 
@@ -146,19 +158,6 @@ private fun HomeContent(
                 style = MaterialTheme.typography.titleLarge
             )
         } else {
-
-            /*
-                -Probably better if we move this to HomeViewModel?
-                -LazyListState: the option to observe when scrolling within the LazyColumn
-                -LaunchedEffect: will execute when taskList size changes (adding item, deleting item)
-             */
-            val lazyListState = rememberLazyListState()
-            LaunchedEffect(taskList.size) {
-                //lazyListState.animateScrollToItem(0 ,taskList.lastIndex)
-                //Another Option: same result
-                lazyListState.scrollToItem(taskList.lastIndex)
-            }
-
             LazyColumn(
                 state = lazyListState,
                 horizontalAlignment = Alignment.Start,

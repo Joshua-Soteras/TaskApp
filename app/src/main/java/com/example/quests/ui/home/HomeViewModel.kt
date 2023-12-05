@@ -18,6 +18,7 @@ data class HomeUiState(
     val taskList: List<Task> = listOf(),
     val snackbarMessage: Int? = null,
     val lastTaskCompleted: Task? = null,
+    var newTaskAvailable: Boolean = false,
 )
 
 @HiltViewModel
@@ -28,11 +29,26 @@ class HomeViewModel @Inject constructor(
     private val _snackbarMessage = MutableStateFlow<Int?>(null)
     private val _lastTaskCompleted = MutableStateFlow<Task?>(null)
     private val _tasks = taskRepository.getAllTasksStream()
+    private var lastTaskListSize = -1
 
     val uiState: StateFlow<HomeUiState> = combine(
         _tasks, _snackbarMessage, _lastTaskCompleted
     ) { tasks, snackbarMessage, lastTaskCompleted ->
-        HomeUiState(tasks, snackbarMessage, lastTaskCompleted)
+        HomeUiState(
+            taskList = tasks,
+            snackbarMessage = snackbarMessage,
+            lastTaskCompleted = lastTaskCompleted,
+            // TODO: Probably a better way to handle this without needing lastTaskListSize,
+            //  but whatever
+            newTaskAvailable =
+                if (lastTaskListSize == -1 || lastTaskListSize >= tasks.size) {
+                    lastTaskListSize = tasks.size
+                    false
+                } else {
+                    lastTaskListSize = tasks.size
+                    true
+                }
+        )
     }
         .stateIn(
             scope = viewModelScope,
