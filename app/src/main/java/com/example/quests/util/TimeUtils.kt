@@ -5,11 +5,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+// `this` is milliseconds since epoch, so use UTC offset
 fun Long.toLocalDate(): LocalDate = Instant.ofEpochMilli(this)
-    .atZone(ZoneId.systemDefault())
+    .atOffset(ZoneOffset.UTC)
     .toLocalDate()
 
 fun LocalDate.toFormattedString(
