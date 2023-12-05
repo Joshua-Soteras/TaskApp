@@ -92,6 +92,7 @@ fun AddTaskScreen(
             onDatePickerClick = { openDateDialog.value = true },
             time = uiState.selectedTime?.toFormattedString(),
             onTimePickerClick = { openTimeDialog.value = true },
+            dateTimeIsLate = uiState.selectedDateTimeIsLate,
             modifier = Modifier.padding(paddingValues)
         )
 
@@ -165,6 +166,7 @@ private fun AddTaskContent(
     onDatePickerClick: () -> Unit,
     time: String?,
     onTimePickerClick: () -> Unit,
+    dateTimeIsLate: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -209,8 +211,8 @@ private fun AddTaskContent(
             ),
         )
         // Dumb hack because Compose still gives space to label even if label is null
-        DatePickerTextField(date, onDatePickerClick)
-        TimePickerTextField(time, onTimePickerClick)
+        DatePickerTextField(date, onDatePickerClick, dateTimeIsLate)
+        TimePickerTextField(time, onTimePickerClick, dateTimeIsLate)
         Spacer(modifier = Modifier.size(32.dp)) // TODO: extract this as dimen res
         Button(
             onClick = onSaveClick,
@@ -224,12 +226,15 @@ private fun AddTaskContent(
 }
 
 @Composable
-private fun disabledTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
+private fun disabledTextFieldColors(isLate: Boolean): TextFieldColors = OutlinedTextFieldDefaults.colors(
     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
     unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
     // Disabled colors https://stackoverflow.com/a/76922565
     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-    disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledTextColor =
+    // This probably isn't want the `error` color is meant for, but whatever, change if ugly
+        if (isLate) MaterialTheme.colorScheme.error
+        else MaterialTheme.colorScheme.onSurfaceVariant,
     disabledBorderColor = MaterialTheme.colorScheme.outline,
     disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
     disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
@@ -243,7 +248,8 @@ private fun disabledTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaul
 @Composable
 private fun DatePickerTextField(
     date: String?,
-    onDatePickerClick: () -> Unit
+    onDatePickerClick: () -> Unit,
+    dateTimeIsLate: Boolean,
 ) {
     if (date == null) {
         TextField(
@@ -256,7 +262,7 @@ private fun DatePickerTextField(
             leadingIcon = {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
             },
-            colors = disabledTextFieldColors()
+            colors = disabledTextFieldColors(isLate = dateTimeIsLate)
         )
     } else {
         TextField(
@@ -270,7 +276,7 @@ private fun DatePickerTextField(
             leadingIcon = {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
             },
-            colors = disabledTextFieldColors(),
+            colors = disabledTextFieldColors(isLate = dateTimeIsLate),
         )
     }
 }
@@ -278,7 +284,8 @@ private fun DatePickerTextField(
 @Composable
 private fun TimePickerTextField(
     time: String?,
-    onTimePickerClick: () -> Unit
+    onTimePickerClick: () -> Unit,
+    dateTimeIsLate: Boolean,
 ) {
     if (time == null) {
         TextField(
@@ -294,7 +301,7 @@ private fun TimePickerTextField(
                     contentDescription = null
                 )
             },
-            colors = disabledTextFieldColors()
+            colors = disabledTextFieldColors(isLate = dateTimeIsLate)
         )
     } else {
         TextField(
@@ -311,7 +318,7 @@ private fun TimePickerTextField(
                     contentDescription = null
                 )
             },
-            colors = disabledTextFieldColors(),
+            colors = disabledTextFieldColors(isLate = dateTimeIsLate),
         )
     }
 }

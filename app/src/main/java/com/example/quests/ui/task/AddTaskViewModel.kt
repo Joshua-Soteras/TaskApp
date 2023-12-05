@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -21,6 +22,7 @@ data class AddTaskUiState(
     val description: String = "",
     val selectedDate: LocalDate? = null,
     val selectedTime: LocalTime? = null,
+    val selectedDateTimeIsLate: Boolean = false,
 //    val userMessage: Int? = null, don't think we use this for anything
     val isEntryValid: Boolean = false,
     val isTaskSaved: Boolean = false
@@ -60,6 +62,7 @@ class AddTaskViewModel @Inject constructor(
         if (newSelectedDate == null) {
             updateSelectedTime(null)
         }
+        checkSelectedDateTimeIsLate()
         validateEntry()
     }
 
@@ -77,7 +80,19 @@ class AddTaskViewModel @Inject constructor(
                 updateSelectedDate(LocalDate.now().plusDays(1)) // Tomorrow
             }
         }
+        checkSelectedDateTimeIsLate()
         validateEntry()
+    }
+
+    private fun checkSelectedDateTimeIsLate() {
+        _uiState.update {
+            it.copy(
+                selectedDateTimeIsLate = uiState.value.selectedDate
+                    ?.atNullableTime(uiState.value.selectedTime)
+                    ?.isBefore(LocalDateTime.now())
+                    ?: false
+            )
+        }
     }
 
     private fun validateEntry() {
