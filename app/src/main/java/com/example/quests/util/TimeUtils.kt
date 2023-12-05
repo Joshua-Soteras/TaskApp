@@ -24,8 +24,8 @@ fun LocalDate.toFormattedString(
  * Same as java.time.LocalDate(LocalTime time) except that this one
  * sets the time to be the end of the day if [time] is null.
  */
-fun LocalDate.atTime(time: LocalTime?): LocalDateTime = when {
-    time == null -> this.atTime(LocalTime.MAX)
+fun LocalDate.atNullableTime(time: LocalTime?): LocalDateTime = when (time) {
+    null -> this.atTime(LocalTime.MAX)
     else -> this.atTime(time)
 }
 

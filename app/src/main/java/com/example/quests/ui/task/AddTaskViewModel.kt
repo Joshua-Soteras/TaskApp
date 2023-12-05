@@ -3,6 +3,7 @@ package com.example.quests.ui.task
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quests.data.TaskRepository
+import com.example.quests.util.atNullableTime
 import com.example.quests.util.isWithinToday
 import com.example.quests.util.toEpochMilli
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -91,7 +92,7 @@ class AddTaskViewModel @Inject constructor(
                 title = uiState.value.title,
                 description = uiState.value.description,
                 dueDate = uiState.value.selectedDate
-                    ?.atTime(uiState.value.selectedTime)
+                    ?.atNullableTime(uiState.value.selectedTime)
                     ?.toEpochMilli()
                     ?: 0L
             )
