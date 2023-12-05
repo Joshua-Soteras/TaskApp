@@ -3,10 +3,13 @@ package com.example.quests.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Checkbox
@@ -22,6 +25,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,7 +33,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -37,6 +40,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,12 +49,9 @@ import com.example.quests.data.Task
 import com.example.quests.ui.navigation.NavigationDestination
 import com.example.quests.ui.theme.QuestsTheme
 import com.example.quests.ui.util.HomeTopAppBar
-import hilt_aggregated_deps._dagger_hilt_android_internal_modules_ApplicationContextModule
+import com.example.quests.util.toFormattedString
+import com.example.quests.util.toLocalDateTime
 import kotlinx.coroutines.launch
-
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 
 
 object HomeDestination : NavigationDestination {
@@ -69,7 +70,16 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = enterAlwaysScrollBehavior()
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    if (uiState.newTaskAvailable) {
+        LaunchedEffect(lazyListState) {
+            lazyListState.scrollToItem(uiState.taskList.lastIndex)
+        }
+        // Set this to null after composition
+        uiState.newTaskAvailable = false
+    }
 
     Scaffold(
         modifier = modifier
@@ -120,6 +130,7 @@ fun HomeScreen(
         HomeContent(
             taskList = uiState.taskList,
             onTaskCheckedChange = viewModel::completeTask,
+            lazyListState = lazyListState,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
@@ -132,6 +143,7 @@ fun HomeScreen(
 private fun HomeContent(
     taskList: List<Task>,
     onTaskCheckedChange: (Task, Boolean) -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
     modifier: Modifier = Modifier
 ) {
 
@@ -146,24 +158,14 @@ private fun HomeContent(
                 style = MaterialTheme.typography.titleLarge
             )
         } else {
-
-            /*
-                -Probably better if we move this to HomeViewModel?
-                -LazyListState: the option to observe when scrolling within the LazyColumn
-                -LaunchedEffect: will execute when taskList size changes (adding item, deleting item)
-             */
-            val lazyListState = rememberLazyListState()
-            LaunchedEffect(taskList.size) {
-                //lazyListState.animateScrollToItem(0 ,taskList.lastIndex)
-                //Another Option: same result
-                lazyListState.scrollToItem(taskList.lastIndex)
-            }
-
             LazyColumn(
                 state = lazyListState,
                 horizontalAlignment = Alignment.Start,
                 // Have to use Modifier instead of the passed modifier here or else there will
-                // be large padding on top of the list. No idea what's causing that
+                // be large padding on top of the list. No idea what's causing that.
+                // EDIT: think I know what was causing that, lowercase `modifier` has the
+                // paddingValues from the Scaffold which is applied to not make the TopAppBar
+                // cover the composable. So don't use `modifier` from the Scaffold.
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(taskList) {task ->
@@ -186,34 +188,56 @@ private fun TaskItem(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row {
-        val undoMessage = stringResource(R.string.snackbar_undo)
+    Row(
+        modifier = modifier
+    ) {
         Checkbox(
             checked = task.isCompleted,
             onCheckedChange = onCheckedChange,
-            modifier = Modifier.alignByBaseline()
+            modifier = Modifier.alignBy { it.measuredHeight / 1 }
         )
         Column(
             // TODO: extract to dimensionResource
             modifier = Modifier.padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = task.title,
-                style = MaterialTheme.typography.titleLarge,
-                textDecoration = if (task.isCompleted) {
-                    TextDecoration.LineThrough
-                } else {
-                    null
-                },
-                // TODO: probably need to change this if there's a dark mode
-                //  use the color from a color scheme or something?
-                color = if (task.isCompleted) {
-                    Color.Gray
-                } else {
-                    Color.Black
+            Row(
+                modifier = Modifier
+                    .alignBy { it.measuredHeight / 2 }
+            ) {
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    textDecoration = if (task.isCompleted) {
+                        TextDecoration.LineThrough
+                    } else {
+                        null
+                    },
+                    // TODO: probably need to change this if there's a dark mode
+                    //  use the color from a color scheme or something?
+                    color = if (task.isCompleted) {
+                        MaterialTheme.colorScheme.outline
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1, // get rid of this is if you want multiline title
+                    modifier = Modifier.weight(2f)
+                )
+                if (task.hasDueDate) {
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        task.dueDate.toLocalDateTime().toFormattedString(),
+                        maxLines = 1,
+                        textAlign = TextAlign.Right,
+                        color = if (!task.isCompleted && task.isLate) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.outline
+                        }
+                    )
                 }
-            )
+            }
             Text(
                 text = task.description,
                 style = MaterialTheme.typography.titleMedium
@@ -263,7 +287,7 @@ fun TaskItemPreview() {
 fun TaskItemCompletedPreview() {
     QuestsTheme {
         TaskItem(
-            task = Task("1", "title", "description", completionDate = 1L),
+            task = Task("1", "item title", "a description", completionDate = 1L),
             onCheckedChange = { }
         )
     }

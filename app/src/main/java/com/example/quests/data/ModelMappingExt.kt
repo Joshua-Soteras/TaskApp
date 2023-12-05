@@ -25,6 +25,7 @@ fun Task.toLocal() = LocalTask(
     title = title,
     description = description,
     completionDate = completionDate,
+    dueDate = dueDate,
 )
 
 fun List<Task>.toLocal() = map(Task::toLocal)
@@ -35,6 +36,7 @@ fun LocalTask.toExternal() = Task(
     title = title,
     description = description,
     completionDate = completionDate,
+    dueDate = dueDate,
 )
 
 // Note: JvmName is used to provide a unique name for each extension function with the same name.
@@ -48,7 +50,8 @@ fun NetworkTask.toLocal() = LocalTask(
     id = id,
     title = title,
     description = description,
-    completionDate = completionDate
+    completionDate = completionDate,
+    dueDate = dueDate,
 )
 
 @JvmName("networkToLocal")
@@ -59,7 +62,8 @@ fun LocalTask.toNetwork() = NetworkTask(
     id = id,
     title = title,
     description = description,
-    completionDate = completionDate
+    completionDate = completionDate,
+    dueDate = dueDate
 )
 
 fun List<LocalTask>.toNetwork() = map(LocalTask::toNetwork)

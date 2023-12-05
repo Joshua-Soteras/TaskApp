@@ -1,11 +1,12 @@
-from flask import Blueprint, abort, make_response, jsonify
+from flask import Blueprint, abort, jsonify
 from flask_apispec import doc, use_kwargs, marshal_with
 from webargs import fields
 from sqlalchemy import exc
 from marshmallow import validate
-from flask_jwt_extended import create_access_token, current_user, jwt_required, JWTManager
+from flask_jwt_extended import current_user, jwt_required
 
 from app.database import Session
+from app.schemas import UserSchema
 
 from .service import (
     get,
@@ -24,9 +25,9 @@ bp = Blueprint('user', __name__, url_prefix='/users')
 )
 @bp.route('/data', methods=['GET'])
 @jwt_required()
-@marshal_with(None, code=200)
+@marshal_with(UserSchema, code=200)
 def get_data():
-    return jsonify(data=current_user.data)
+    return current_user
 docs.register(get_data, blueprint='api.v1.user')
 
 
@@ -41,14 +42,14 @@ docs.register(get_data, blueprint='api.v1.user')
 @use_kwargs({
     'data': fields.Str(required=True)
 })
-@marshal_with(None, code=200)
+@marshal_with(UserSchema, code=200)
 def upload_data(data):
     try:
         update_data(Session, current_user.username, data)
     except Exception:
         # Not sure what could cause this
         abort(400, description='Unexpected error occurred when updating data.')
-    return jsonify(data=current_user.data)
+    return current_user
 docs.register(upload_data, blueprint='api.v1.user')
 
 # test command
