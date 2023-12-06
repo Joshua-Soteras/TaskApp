@@ -51,13 +51,16 @@ fun LocalDateTime.toFormattedString(
     if (this.year != LocalDate.now().year) {
         newPattern = newPattern.plus(", yyyy")
     }
-    // this.toLocalTime() only keeps precision up to .999,
-    // but LocalTime.MAX is .999999999, so switch it's nano with ours
-    if (this.toLocalTime() != LocalTime.MAX.withNano(this.nano)) {
+    if (!this.isAtEndOfDay()) {
         newPattern = newPattern.plus(" h:mm a")
     }
     return this.format(DateTimeFormatter.ofPattern(newPattern, locale))
 }
+
+// this.toLocalTime() only keeps precision up to .999,
+// but LocalTime.MAX is .999999999, so switch it's nano with ours
+fun LocalDateTime.isAtEndOfDay(): Boolean =
+    this.toLocalTime().toSecondOfDay() == LocalTime.MAX.toSecondOfDay()
 
 fun LocalDateTime.toEpochMilli(): Long =
     this.atZone(ZoneId.systemDefault())

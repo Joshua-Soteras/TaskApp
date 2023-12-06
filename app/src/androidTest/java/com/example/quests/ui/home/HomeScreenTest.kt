@@ -36,7 +36,8 @@ class HomeScreenTest {
                 HomeScreen(
                     onAddTask = { },
                     openDrawer = { },
-                    viewModel = HomeViewModel(repository)
+                    viewModel = HomeViewModel(repository),
+                    onTaskClick = { }
                 )
             }
         }

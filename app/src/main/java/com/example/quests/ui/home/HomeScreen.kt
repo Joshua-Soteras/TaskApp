@@ -1,5 +1,6 @@
 package com.example.quests.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,6 +65,7 @@ object HomeDestination : NavigationDestination {
 fun HomeScreen(
     onAddTask: () -> Unit,
     openDrawer: () -> Unit,
+    onTaskClick: (Task) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -130,6 +132,7 @@ fun HomeScreen(
         HomeContent(
             taskList = uiState.taskList,
             onTaskCheckedChange = viewModel::completeTask,
+            onTaskClick = onTaskClick,
             lazyListState = lazyListState,
             modifier = Modifier
                 .padding(paddingValues)
@@ -143,6 +146,7 @@ fun HomeScreen(
 private fun HomeContent(
     taskList: List<Task>,
     onTaskCheckedChange: (Task, Boolean) -> Unit,
+    onTaskClick: (Task) -> Unit,
     lazyListState: LazyListState = rememberLazyListState(),
     modifier: Modifier = Modifier
 ) {
@@ -172,6 +176,7 @@ private fun HomeContent(
                     TaskItem(
                         task = task,
                         onCheckedChange = { onTaskCheckedChange(task, it) },
+                        onTaskClick = onTaskClick,
                         modifier = Modifier
                             // TODO: extract as dimensionResource
                             .padding(8.dp)
@@ -186,10 +191,11 @@ private fun HomeContent(
 private fun TaskItem(
     task: Task,
     onCheckedChange: (Boolean) -> Unit,
+    onTaskClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
+        modifier = modifier.clickable { onTaskClick(task) }
     ) {
         Checkbox(
             checked = task.isCompleted,
@@ -255,7 +261,8 @@ fun HomeContentPreview() {
                 Task("1", "title1", "desc1"),
                 Task("2", "title2", "desc2")
             ),
-            onTaskCheckedChange = { _, _ -> }
+            onTaskCheckedChange = { _, _ -> },
+            onTaskClick = { }
         )
     }
 }
@@ -266,7 +273,8 @@ fun HomeContentEmptyListPreview() {
     QuestsTheme {
         HomeContent(
             taskList= listOf(),
-            onTaskCheckedChange = { _, _ -> }
+            onTaskCheckedChange = { _, _ -> },
+            onTaskClick = { }
         )
     }
 }
@@ -277,7 +285,8 @@ fun TaskItemPreview() {
     QuestsTheme {
         TaskItem(
             task = Task("1", "item title", "a description"),
-            onCheckedChange = { }
+            onCheckedChange = { },
+            onTaskClick = { }
         )
     }
 }
@@ -288,7 +297,8 @@ fun TaskItemCompletedPreview() {
     QuestsTheme {
         TaskItem(
             task = Task("1", "item title", "a description", completionDate = 1L),
-            onCheckedChange = { }
+            onCheckedChange = { },
+            onTaskClick = { }
         )
     }
 }

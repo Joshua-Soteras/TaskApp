@@ -39,4 +39,7 @@
     <string name="select_time">Select time</string>
     <string name="switch_to_text_input">Switch to Text Input</string>
     <string name="switch_to_touch_input">Switch to Touch Input</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="delete">Delete</string>
+    <string name="delete_this_task">Delete this task?</string>
 </resources>
