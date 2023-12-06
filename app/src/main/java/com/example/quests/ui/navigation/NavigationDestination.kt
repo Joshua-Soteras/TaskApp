@@ -27,7 +27,7 @@ interface NavigationDestination {
  */
 class QuestsNavigationActions(private val navController: NavHostController) {
 
-    fun navigateToHome() {
+    fun navigateToHome(restoreStateValue: Boolean = true) {
         navController.navigate(HomeDestination.route) {
             // Pop up to the start destination of the graph to
             // avoid building up a large stack of destinations
@@ -39,7 +39,7 @@ class QuestsNavigationActions(private val navController: NavHostController) {
             // reselecting the same item
             launchSingleTop = true
             // Restore state when reselecting a previously selected item
-            restoreState = true
+            restoreState = restoreStateValue
         }
     }
 

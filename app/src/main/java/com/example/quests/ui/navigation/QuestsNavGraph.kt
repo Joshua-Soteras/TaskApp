@@ -27,6 +27,8 @@ import com.example.quests.ui.home.HomeDestination
 import com.example.quests.ui.home.HomeScreen
 import com.example.quests.ui.task.AddTaskDestination
 import com.example.quests.ui.task.AddTaskScreen
+import com.example.quests.ui.task.TaskDetailDestination
+import com.example.quests.ui.task.TaskDetailScreen
 import com.example.quests.ui.util.AppModalDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -55,13 +57,20 @@ fun QuestsNavHost(
             AppModalDrawer(drawerState, currentRoute, navActions) {
                 HomeScreen(
                     onAddTask = { navController.navigate(AddTaskDestination.route) },
-                    openDrawer = { coroutineScope.launch { drawerState.open() } }
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onTaskClick = { task -> navController.navigate("task/${task.id}") }
                 )
             }
         }
         composable(route = AddTaskDestination.route) {
             AddTaskScreen(
                 navigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(route = TaskDetailDestination.route) {
+            TaskDetailScreen(
+                navigateBack = { navController.popBackStack() },
+                onDeleteTask = { navActions.navigateToHome(false) }
             )
         }
         composable(route = BackupDestination.route) {
