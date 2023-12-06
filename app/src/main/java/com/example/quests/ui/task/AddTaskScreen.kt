@@ -154,8 +154,9 @@ fun AddTaskScreen(
     }
 }
 
+// Make this function public so it can be used in TaskDetailScreen
 @Composable
-private fun AddTaskContent(
+fun AddTaskContent(
     title: String,
     description: String,
     isEntryValid: Boolean,
