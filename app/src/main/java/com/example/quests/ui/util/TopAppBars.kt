@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
@@ -144,6 +145,64 @@ fun AddTaskTopAppBar(
             }
         },
     )
+}
+
+@Composable
+fun TaskDetailTopAppBar(
+    onBack: () -> Unit,
+    deleteTask: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val openAlertDialog = remember { mutableStateOf(false) }
+
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.edit_task)) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { openAlertDialog.value = !openAlertDialog.value }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.delete)
+                )
+            }
+        }
+    )
+
+    if (openAlertDialog.value) {
+        AlertDialog(
+            title = { Text(stringResource(R.string.delete_this_task)) },
+            onDismissRequest = { openAlertDialog.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deleteTask()
+                        openAlertDialog.value = false
+                    },
+                    modifier = Modifier.testTag("confirm delete task")
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openAlertDialog.value = false
+                    },
+                    modifier = Modifier.testTag("dismiss delete task")
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
 }
 
 @Composable
