@@ -2,6 +2,8 @@ package com.example.quests.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.quests.data.AuthRepository
+import com.example.quests.data.FakeAuthRepository
 import com.example.quests.data.FakeTaskRepository
 import com.example.quests.data.TaskRepository
 import com.example.quests.data.source.local.QuestsDatabase
@@ -25,6 +27,12 @@ object RepositoryTestModule {
     @Provides
     fun provideTaskRepository(): TaskRepository {
         return FakeTaskRepository()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAuthRepository() : AuthRepository {
+        return FakeAuthRepository()
     }
 }
 

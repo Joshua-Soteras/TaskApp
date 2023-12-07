@@ -3,19 +3,27 @@ package com.example.quests.ui.task
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quests.data.TaskRepository
+import com.example.quests.util.atNullableTime
+import com.example.quests.util.isWithinToday
+import com.example.quests.util.toEpochMilli
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 
-// change this to have a isEntryValid: Boolean field
 data class AddTaskUiState(
     val title: String = "",
     val description: String = "",
-    val userMessage: Int? = null,
+    val selectedDate: LocalDate? = null,
+    val selectedTime: LocalTime? = null,
+    val selectedDateTimeIsLate: Boolean = false,
+//    val userMessage: Int? = null, don't think we use this for anything
     val isEntryValid: Boolean = false,
     val isTaskSaved: Boolean = false
 )
@@ -46,6 +54,47 @@ class AddTaskViewModel @Inject constructor(
         validateEntry()
     }
 
+    fun updateSelectedDate(newSelectedDate: LocalDate?) {
+        _uiState.update {
+            it.copy(selectedDate = newSelectedDate)
+        }
+        // If there is date is null, time is null
+        if (newSelectedDate == null) {
+            updateSelectedTime(null)
+        }
+        checkSelectedDateTimeIsLate()
+        validateEntry()
+    }
+
+    fun updateSelectedTime(newSelectedTime: LocalTime?) {
+        _uiState.update {
+            it.copy(selectedTime = newSelectedTime)
+        }
+        // If newSelectedTime is not null and selectedDate is null, choose a new selectedDate
+        // depending on the current time.
+        val selectedDate = _uiState.value.selectedDate
+        if (newSelectedTime != null && selectedDate == null) {
+            if (newSelectedTime.isWithinToday()) {
+                updateSelectedDate(LocalDate.now()) // Today
+            } else {
+                updateSelectedDate(LocalDate.now().plusDays(1)) // Tomorrow
+            }
+        }
+        checkSelectedDateTimeIsLate()
+        validateEntry()
+    }
+
+    private fun checkSelectedDateTimeIsLate() {
+        _uiState.update {
+            it.copy(
+                selectedDateTimeIsLate = uiState.value.selectedDate
+                    ?.atNullableTime(uiState.value.selectedTime)
+                    ?.isBefore(LocalDateTime.now())
+                    ?: false
+            )
+        }
+    }
+
     private fun validateEntry() {
         _uiState.update {
             it.copy(isEntryValid = it.title.isNotBlank())
@@ -54,7 +103,14 @@ class AddTaskViewModel @Inject constructor(
 
     fun createTask() {
         viewModelScope.launch {
-            taskRepository.createTask(uiState.value.title, uiState.value.description)
+            taskRepository.createTask(
+                title = uiState.value.title,
+                description = uiState.value.description,
+                dueDate = uiState.value.selectedDate
+                    ?.atNullableTime(uiState.value.selectedTime)
+                    ?.toEpochMilli()
+                    ?: 0L
+            )
             _uiState.update {
                 it.copy(isTaskSaved = true)
             }
