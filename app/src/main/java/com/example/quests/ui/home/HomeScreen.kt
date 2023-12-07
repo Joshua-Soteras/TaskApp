@@ -22,13 +22,13 @@
 package com.example.quests.ui.home
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -201,7 +201,7 @@ private fun HomeContent(
                         onTaskClick = onTaskClick,
                         modifier = Modifier
                             // TODO: extract as dimensionResource
-                            .padding(8.dp)
+                            .padding(top=8.dp, start=4.dp, end=4.dp)
                             .fillMaxWidth()
                     )
                 }
@@ -223,23 +223,21 @@ private fun TaskItem(
         Row(
             modifier = modifier.clickable { onTaskClick(task) }
         ) {
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = onCheckedChange,
-                modifier = Modifier.alignBy { it.measuredHeight / 1 }
-            )
             Column(
                 // TODO: extract to dimensionResource
-                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             ) {
                 Row(
                     modifier = Modifier
-                        .alignBy { it.measuredHeight / 2 }
                 ) {
+                    Checkbox(
+                        checked = task.isCompleted,
+                        onCheckedChange = onCheckedChange,
+                        modifier = Modifier.align(Alignment.Top)
+                    )
                     Text(
                         text = task.title,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         textDecoration = if (task.isCompleted) {
                             TextDecoration.LineThrough
                         } else {
@@ -254,7 +252,9 @@ private fun TaskItem(
                         },
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1, // get rid of this is if you want multiline title
-                        modifier = Modifier.weight(2f)
+                        modifier = Modifier
+                            .weight(2f)
+                            .align(Alignment.CenterVertically)
                     )
                     if (task.hasDueDate) {
                         Spacer(Modifier.weight(1f))
@@ -267,15 +267,25 @@ private fun TaskItem(
                             } else {
                                 MaterialTheme.colorScheme.outline
                             },
-                            modifier = Modifier.align(Alignment.CenterVertically)
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(end=8.dp)
                         )
                     }
                 }
                 if (task.description.isNotEmpty()) {
-                    Text(
-                        text = task.description,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    Row {
+                        // TODO: Default size of checkbox is 20.dp, we double it (idk why), then
+                        //  the spacing in row scope is 8, so we add 8? No idea, but it works...
+                        //  This is still an awful solution because it's hardcoded.
+                        //  https://stackoverflow.com/a/75358237
+                        Spacer(Modifier.width((2*20 + 8).dp))
+                        Text(
+                            text = task.description,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(end=8.dp, bottom=8.dp)
+                        )
+                    }
                 }
             }
         }
