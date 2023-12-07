@@ -38,6 +38,7 @@ import com.example.quests.R
 @Composable
 fun HomeTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    openDrawer: () -> Unit,
     clearCompletedTasks: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -52,7 +53,7 @@ fun HomeTopAppBar(
             titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = openDrawer) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.open_drawer)
@@ -60,15 +61,8 @@ fun HomeTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete Button"
-                )
-            }
             HomeDropdownMenu(
                 onClearCompletedTasks = { openAlertDialog.value = !openAlertDialog.value },
-
             )
         }
     )
@@ -118,7 +112,7 @@ private fun HomeDropdownMenu(
         ) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
-                contentDescription = stringResource(R.string.home_dropdown_menu_description),
+                contentDescription = stringResource(R.string.dropdown_menu_description),
             )
         }
         DropdownMenu(
@@ -153,12 +147,170 @@ fun AddTaskTopAppBar(
     )
 }
 
+@Composable
+fun TaskDetailTopAppBar(
+    onBack: () -> Unit,
+    deleteTask: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val openAlertDialog = remember { mutableStateOf(false) }
+
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.edit_task)) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { openAlertDialog.value = !openAlertDialog.value }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.delete)
+                )
+            }
+        }
+    )
+
+    if (openAlertDialog.value) {
+        AlertDialog(
+            title = { Text(stringResource(R.string.delete_this_task)) },
+            onDismissRequest = { openAlertDialog.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deleteTask()
+                        openAlertDialog.value = false
+                    },
+                    modifier = Modifier.testTag("confirm delete task")
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openAlertDialog.value = false
+                    },
+                    modifier = Modifier.testTag("dismiss delete task")
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun BackupTopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    openDrawer: () -> Unit,
+    onSignOut: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    CenterAlignedTopAppBar(
+        title = { Text(text = stringResource(id = R.string.backup)) },
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.open_drawer)
+                )
+            }
+        },
+        actions = {
+            BackupDropdownMenu(
+                onSignOut = onSignOut
+            )
+        }
+    )
+}
+
+@Composable
+fun BackupDropdownMenu(
+    onSignOut: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+    ) {
+        IconButton(
+            onClick = { expanded = !expanded },
+            modifier = Modifier.testTag("backup dropdown button")
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.dropdown_menu_description),
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.sign_out))},
+                onClick = { onSignOut(); expanded = !expanded },
+                modifier = Modifier.testTag("sign out button")
+            )
+        }
+    }
+}
+
+@Composable
+fun LoginTopAppBar(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(text = stringResource(id = R.string.login)) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        },
+    )
+}
+
+@Composable
+fun SignupTopAppBar(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = { Text(text = stringResource(id = R.string.sign_up)) },
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
+            }
+        },
+    )
+}
 
 @Preview
 @Composable
 private fun HomeTopAppBarPreview() {
     Surface {
-        HomeTopAppBar(clearCompletedTasks = { })
+        HomeTopAppBar(openDrawer = { }, clearCompletedTasks = { })
     }
 }
 
@@ -175,5 +327,29 @@ private fun HomeDropdownMenuPreview() {
 private fun AddTaskTopAppBarPreview() {
     Surface {
         AddTaskTopAppBar({ })
+    }
+}
+
+@Preview
+@Composable
+private fun BackupTopAppBarPreview() {
+    Surface {
+        BackupTopAppBar(openDrawer = { }, onSignOut = { })
+    }
+}
+
+@Preview
+@Composable
+private fun LoginTopAppBarPreview() {
+    Surface {
+        LoginTopAppBar(onBack = { })
+    }
+}
+
+@Preview
+@Composable
+private fun SignupTopAppBarPreview() {
+    Surface {
+        SignupTopAppBar(onBack = { })
     }
 }

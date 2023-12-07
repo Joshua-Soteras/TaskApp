@@ -79,6 +79,24 @@ class TaskDaoTest {
     }
 
     @Test
+    fun insertAllTasksAndGetTasks() = runTest {
+        // GIVEN - a list of tasks
+        val l = listOf(task1, task2)
+
+        // WHEN - inserting the list and getting all tasks
+        taskDao.insertAll(l)
+        val loaded: List<LocalTask> = taskDao.getAllTasks().first()
+
+        // THEN - the loaded data contains both tasks
+        loaded.size shouldBe 2
+        for ((index, task) in loaded.withIndex()) {
+            loaded[index].id shouldBe task.id
+            loaded[index].title shouldBe task.title
+            loaded[index].description shouldBe task.description
+        }
+    }
+
+    @Test
     fun updateTaskAndGetTask() = runTest {
         // GIVEN - Insert a task
         addOneTaskToDb()

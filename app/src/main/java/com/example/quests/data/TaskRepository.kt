@@ -10,7 +10,11 @@ interface TaskRepository {
 
     fun getTaskStream(id: String): Flow<Task?>
 
-    suspend fun createTask(title: String, description: String = ""): String
+    suspend fun createTask(
+        title: String,
+        description: String = "",
+        dueDate: Long = 0L
+    ): String
 
     suspend fun insertTask(task: Task)
 
@@ -25,4 +29,8 @@ interface TaskRepository {
     suspend fun activateTask(id: String)
 
     suspend fun clearCompletedTasks()
+
+    suspend fun saveTasksToNetwork(onComplete: () -> Unit, onError: (String?) -> Unit)
+
+    suspend fun loadTasksFromNetwork(onComplete: () -> Unit, onError: (String?) -> Unit)
 }

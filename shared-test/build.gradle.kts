@@ -10,7 +10,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
     }
 
     compileOptions {
@@ -35,5 +35,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     implementation("com.google.dagger:hilt-android:2.48.1")
     implementation("com.google.dagger:hilt-android-testing:2.48.1")
+    implementation("com.github.skydoves:sandwich:2.0.4")
     ksp("com.google.dagger:hilt-android-compiler:2.48.1")
 }
