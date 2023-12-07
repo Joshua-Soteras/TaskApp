@@ -21,6 +21,7 @@
 
 package com.example.quests.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,6 +78,18 @@ import com.example.quests.ui.util.HomeTopAppBar
 import com.example.quests.util.toFormattedString
 import com.example.quests.util.toLocalDateTime
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.ui.unit.sp
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -217,6 +231,8 @@ private fun TaskItem(
     onTaskClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    //probably need to change
+    var expanded by remember { mutableStateOf(false) }
     Card(
         modifier = modifier
     ) {
@@ -225,7 +241,14 @@ private fun TaskItem(
         ) {
             Column(
                 // TODO: extract to dimensionResource
-                modifier = Modifier.padding(bottom = 8.dp),
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioNoBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        )
+                    )
             ) {
                 Row(
                     modifier = Modifier
@@ -269,11 +292,18 @@ private fun TaskItem(
                             },
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
-                                .padding(end=8.dp)
+                                .padding(end = 8.dp),
+                            fontSize = 12.sp
+                        )
+                    }
+                    if (task.description.isNotEmpty()){
+                        ExpandButton(
+                            expanded = expanded,
+                            onClick = { expanded = !expanded }
                         )
                     }
                 }
-                if (task.description.isNotEmpty()) {
+                if (task.description.isNotEmpty() && expanded) {
                     Row {
                         // TODO: Default size of checkbox is 20.dp, we double it (idk why), then
                         //  the spacing in row scope is 8, so we add 8? No idea, but it works...
@@ -291,6 +321,22 @@ private fun TaskItem(
         }
     }
 }
+
+@Composable
+fun ExpandButton(
+    expanded : Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+){
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+            contentDescription = null)
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

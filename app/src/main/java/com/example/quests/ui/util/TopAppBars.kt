@@ -66,7 +66,11 @@ fun HomeTopAppBar(
     val openAlertDialog = remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(R.string.home_destination_title)) },
+        title = {
+            Text(
+                text = stringResource(R.string.home_destination_title),
+                style = MaterialTheme.typography.displayMedium
+            ) },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
@@ -234,7 +238,11 @@ fun BackupTopAppBar(
     modifier: Modifier = Modifier,
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = R.string.backup)) },
+        title = {
+            Text(
+                text = stringResource(id = R.string.backup),
+                style = MaterialTheme.typography.displayMedium
+            ) },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(
