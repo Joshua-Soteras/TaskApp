@@ -54,6 +54,7 @@ data class TaskDetailUiState(
     val selectedDateTimeIsLate: Boolean = false,
 //    val userMessage: Int? = null, don't think we use this for anything
     val isEntryValid: Boolean = true,
+    val completionDate: Long = 0L,
     val isTaskSaved: Boolean = false,
     val isTaskDeleted: Boolean = false
 )
@@ -81,7 +82,8 @@ class TaskDetailViewModel @Inject constructor(
                         if (task?.hasDueDate == false
                                 || task?.dueDate?.toLocalDateTime()?.isAtEndOfDay() == true)
                             null
-                        else task?.dueDate?.toLocalDateTime()?.toLocalTime()
+                        else task?.dueDate?.toLocalDateTime()?.toLocalTime(),
+                    completionDate = task?.completionDate ?: 0
                 )
             }
         }
@@ -161,6 +163,7 @@ class TaskDetailViewModel @Inject constructor(
             ?.atNullableTime(uiState.value.selectedTime)
             ?.toEpochMilli()
             ?: 0L,
+        completionDate = uiState.value.completionDate
     )
 
     fun saveTask() {
