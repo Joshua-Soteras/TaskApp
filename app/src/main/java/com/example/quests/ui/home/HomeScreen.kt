@@ -245,14 +245,17 @@ private fun TaskItem(
                                 MaterialTheme.colorScheme.error
                             } else {
                                 MaterialTheme.colorScheme.outline
-                            }
+                            },
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
                 }
-                Text(
-                    text = task.description,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                if (task.description.isNotEmpty()) {
+                    Text(
+                        text = task.description,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
             }
         }
     }
