@@ -27,6 +27,8 @@ import io.kotest.matchers.shouldBe
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
+import java.time.LocalTime
 
 class AddTaskViewModelTest {
 
@@ -62,5 +64,22 @@ class AddTaskViewModelTest {
         val newTask = taskRepository.savedTasks.value.values.first()
         newTask.title shouldBe newTitle
         newTask.description shouldBe newDescription
+    }
+    @Test
+    fun createTask_withLateDateTime_setsSelectedDateTimeIsLate() {
+        // GIVEN - a ViewModel with a selected date and time in the past
+        addTaskViewModel = AddTaskViewModel(taskRepository)
+        val pastDate = LocalDate.now().minusDays(1)
+        val pastTime = LocalTime.now().minusHours(1)
+        addTaskViewModel.apply {
+            updateSelectedDate(pastDate)
+            updateSelectedTime(pastTime)
+        }
+
+        // WHEN - calling createTask()
+        addTaskViewModel.createTask()
+
+        // THEN - selectedDateTimeIsLate should be true
+        addTaskViewModel.uiState.value.selectedDateTimeIsLate shouldBe true
     }
 }
