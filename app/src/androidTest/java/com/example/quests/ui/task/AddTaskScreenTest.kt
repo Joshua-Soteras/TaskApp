@@ -93,4 +93,41 @@ class AddTaskScreenTest {
         tasks[0].title shouldBe title
         tasks[0].description shouldBe description
     }
+    @Test
+    fun emptyTask_isNotCreated() = runTest {
+        // GIVEN - an empty repository
+        repository.deleteAllTasks()
+
+        // WHEN - no title and description are filled out
+        addTask(composeTestRule) {
+            assertSaveIsNotEnabled()
+        } save { }
+
+        composeTestRule.awaitIdle()
+
+        // THEN - no task should be saved in the repository
+        val tasks = repository.getAllTasksStream().first()
+        tasks.size shouldBe 0
+    }
+    @Test
+    fun uiInteraction_saveButtonBehavior() = runTest {
+        // GIVEN - an empty repository
+        repository.deleteAllTasks()
+
+        // WHEN - title and description are filled out
+        addTask(composeTestRule) {
+            assertSaveIsNotEnabled() // Save button should be initially disabled
+            title("Test Title")
+            description("Test Description")
+            assertSaveIsEnabled() // Save button should be enabled now
+        } save { }
+
+        composeTestRule.awaitIdle()
+
+        // THEN - the task should be saved in the repository
+        val tasks = repository.getAllTasksStream().first()
+        tasks.size shouldBe 1
+        tasks[0].title shouldBe "Test Title"
+        tasks[0].description shouldBe "Test Description"
+    }
 }
