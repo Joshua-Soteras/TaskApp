@@ -93,4 +93,20 @@ class AddTaskScreenTest {
         tasks[0].title shouldBe title
         tasks[0].description shouldBe description
     }
+    @Test
+    fun emptyTask_isNotCreated() = runTest {
+        // GIVEN - an empty repository
+        repository.deleteAllTasks()
+
+        // WHEN - no title and description are filled out
+        addTask(composeTestRule) {
+            assertSaveIsNotEnabled()
+        } save { }
+
+        composeTestRule.awaitIdle()
+
+        // THEN - no task should be saved in the repository
+        val tasks = repository.getAllTasksStream().first()
+        tasks.size shouldBe 0
+    }
 }
