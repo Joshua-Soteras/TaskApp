@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -84,12 +85,28 @@ fun QuestsNavHost(
         }
         composable(route = AddTaskDestination.route) {
             AddTaskScreen(
-                navigateBack = { navController.popBackStack() }
+                navigateBack = {
+                    if (navController.currentBackStackEntry
+                        ?.lifecycle
+                        ?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
+                }
             )
         }
         composable(route = TaskDetailDestination.route) {
             TaskDetailScreen(
-                navigateBack = { navController.popBackStack() },
+                navigateBack = {
+                    if (navController.currentBackStackEntry
+                            ?.lifecycle
+                            ?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
+                },
                 onDeleteTask = { navActions.navigateToHome(false) }
             )
         }
@@ -106,7 +123,15 @@ fun QuestsNavHost(
         //  messageFromRegister = null there as well.
         composable(route = LoginDestination.route) {
             LoginScreen(
-                navigateBack = { navController.popBackStack() },
+                navigateBack = {
+                    if (navController.currentBackStackEntry
+                            ?.lifecycle
+                            ?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
+                },
                 navigateToSignup = { navController.navigate(SignupDestination.route) },
                 messageFromSignup = messageFromRegister,
             )
@@ -115,8 +140,25 @@ fun QuestsNavHost(
         composable(route = SignupDestination.route) {
             val s: String = stringResource(R.string.successfully_created_new_user)
             SignupScreen(
-                navigateBack = { navController.popBackStack() },
-                navigateBackOnSuccess = { navController.popBackStack(); messageFromRegister = s }
+                navigateBack = {
+                    if (navController.currentBackStackEntry
+                        ?.lifecycle
+                        ?.currentState
+                    == Lifecycle.State.RESUMED
+                    ) {
+                    navController.popBackStack()
+                    }
+                },
+                navigateBackOnSuccess = {
+                    if (navController.currentBackStackEntry
+                            ?.lifecycle
+                            ?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                        messageFromRegister = s
+                    }
+                }
             )
         }
     }
