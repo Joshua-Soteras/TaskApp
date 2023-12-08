@@ -85,13 +85,35 @@ fun QuestsNavHost(
         }
         composable(route = AddTaskDestination.route) {
             AddTaskScreen(
-                navigateBack = { navActions.navigateToHome(false) }
+                navigateBack = {
+                    if (navController.currentBackStackEntry
+                            ?.lifecycle
+                            ?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack(HomeDestination.route, false)
+                    }
+                },
             )
         }
         composable(route = TaskDetailDestination.route) {
             TaskDetailScreen(
-                navigateBack = { navActions.navigateToHome(false) },
-                onDeleteTask = { navActions.navigateToHome(false) }
+                navigateBack = {
+                    if (navController.currentBackStackEntry
+                        ?.lifecycle
+                        ?.currentState
+                    == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack(HomeDestination.route, false)
+                    }
+               },
+                onDeleteTask = { if (navController.currentBackStackEntry
+                        ?.lifecycle
+                        ?.currentState
+                    == Lifecycle.State.RESUMED
+                ) {
+                    navController.popBackStack(HomeDestination.route, false)
+                } }
             )
         }
         composable(route = BackupDestination.route) {
